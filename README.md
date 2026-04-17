@@ -3,8 +3,9 @@ simple Python library to monitor cpu on a device (Linux)
 
 ## Usage
 ```python
-# return processor name
-print(proc_name())
+from syspk import cpu
+# return cpu name
+print(cpu.name())
 ``` 
 output:
 ```python
