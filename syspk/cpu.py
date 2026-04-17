@@ -2,27 +2,42 @@ def vendor():
     # return processor vendor name
     with open('/proc/cpuinfo', 'r') as file:
         for line in file:
-            if line.startswith('vendor'):
+            if line.startswith('vendor_id'):
                 return(line.split(":")[1].strip())
 
-def proc_name():
+def name():
     # return processor name
     with open('/proc/cpuinfo', 'r') as file:
         for line in file:
             if line.startswith('model name'):
-                return(line.split(":")[1].strip())
+                return (line.split(":")[1].strip())
             
-def cpu_family():
+def cores():
+    # return number of cpu cores
+    with open('/proc/cpuinfo', 'r') as file:
+        for line in file:
+            if line.startswith('cpu cores'):
+                return (line.split(':')[1].strip())
+   
+def threads():
+    # return number of threads
+    thread_num = 0
+    with open('/proc/cpuinfo', 'r') as file:
+        for line in file:
+            if line.startswith('processor'):
+                thread_num += 1
+    return(thread_num)
+
+def family():
     # return cpu family value
     with open('/proc/cpuinfo', 'r') as file:
         for line in file:
             if line.startswith('cpu family'):
-                return(line.split(":")[1].strip())
+                return (line.split(":")[1].strip())
             
-def cpu_model():
+def model():
     # return cpu model value
     with open('/proc/cpuinfo', 'r') as file:
         for line in file:
             if line.startswith('model'):
                 return(line.split(":")[1].strip())
-            
