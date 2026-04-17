@@ -1,9 +1,9 @@
-# sypeek
+# Sypeek
 simple Python library to monitor cpu on a device (Linux)
 
 ## Usage
 ```python
-from syspk import cpu
+from sypeek import cpu
 # return cpu name
 print(cpu.name())
 ``` 
