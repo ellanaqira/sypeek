@@ -1,0 +1,1 @@
+from sypeek import cpu

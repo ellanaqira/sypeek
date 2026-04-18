@@ -1,3 +1,5 @@
+import subprocess 
+
 def vendorid():
     # return processor vendors id name
     with open('/proc/cpuinfo', 'r') as file:
@@ -7,6 +9,7 @@ def vendorid():
             
 def vendor():
     # return processor vendors name
+    # processor manufacturer ID string
     id_ext = ["Authentic", "CPU", "Driven", "Geode by NSC", "Genuine", "isbetter!", "RiseRise", "Sis Sis", "UMC UMC", "VIA VIA"]
     with open('/proc/cpuinfo', 'r') as file:
         for line in file:
@@ -17,8 +20,7 @@ def vendor():
                         line = line.replace(i,'')
                     else:
                         line
-                return line
-print(vendor())   
+                return line 
 
 def name():
     # return processor name
@@ -32,7 +34,7 @@ def cores():
     with open('/proc/cpuinfo', 'r') as file:
         for line in file:
             if line.startswith('cpu cores'):
-                return (line.split(':')[1].strip())
+                return int(line.split(':')[1].strip())
    
 def threads():
     # return number of threads
@@ -44,19 +46,41 @@ def threads():
     return(thread_num)
 
 def family():
-    # return cpu family value
-    with open('/proc/cpuinfo', 'r') as file:
-        for line in file:
-            if line.startswith('cpu family'):
-                return (line.split(":")[1].strip())
+    # return cpu family
+    result = subprocess.run("cpuid", capture_output=True, text=True).stdout
+    result = result.split('\n')
+    for k in result:
+        if "family" in k:
+            k = k.split('=')[1].strip()
+            return k
+    
+def family_synth():
+    # return cpu family synth
+    result = subprocess.run("cpuid", capture_output=True, text=True).stdout
+    result = result.split('\n')
+    for k in result:
+        if "(family synth)" in k:
+            k = k.split('=')[1].strip()
+            return k
             
+def model_synth():
+    # return cpu model synth
+    result = subprocess.run("cpuid", capture_output=True, text=True).stdout
+    result = result.split('\n')
+    for k in result:
+        if "(model synth)" in k:
+            k = k.split('=')[1].strip()
+            return k
+
 def model():
-    # return cpu model value
-    with open('/proc/cpuinfo', 'r') as file:
-        for line in file:
-            if line.startswith('model'):
-                return(line.split(":")[1].strip())
-            
+    # return cpu model
+    result = subprocess.run("cpuid", capture_output=True, text=True).stdout
+    result = result.split('\n')
+    for k in result:
+        if "model" in k:
+            k = k.split('=')[1].strip()
+            return k
+
 def stepping():
     # return cpu stepping value
     with open('/proc/cpuinfo', 'r') as file:
@@ -75,4 +99,13 @@ def speed(threads_num):
                 if line.startswith(f"processor	: {threads_num}"):
                     for line in file:
                         if line.startswith("cpu MHz"):
-                            return(line.split(':')[1].strip())
+                            return(line.split(':')[1].strip())          
+
+def temp():
+    # return cpu temperature in celcius
+    result = subprocess.run("sensors", capture_output=True, text=True).stdout
+    result = result.split('\n')
+    for k in result:
+        if "Tctl" in k:
+            k = k.split(':')[1].strip()
+            return float(k.replace('+','').replace("°C",''))

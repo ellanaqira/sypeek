@@ -1,5 +1,5 @@
 # Sypeek
-simple Python library to monitor cpu on a device (Linux)
+simple Python library to monitor cpu on a device (Linux).
 
 ## Usage
 ```python
