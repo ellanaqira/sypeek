@@ -69,5 +69,6 @@ def speed(threads_num):
                             return(line.split(':')[1].strip())          
 
 def temp():
+    # return cpu temperature in celcius
     cputemp = subprocess.run("sensors | grep -m1 'Tctl'", shell=True, capture_output=True, text=True).stdout
     return float(cputemp.split(":")[1].strip().replace('+','').replace("°C",''))
