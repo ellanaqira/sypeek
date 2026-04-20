@@ -54,7 +54,7 @@ def stepping():
     # return cpu stepping value
     step = subprocess.run("lscpu | grep -m1 'Stepping'", shell=True, capture_output=True, text=True).stdout
     return int(step.split(':')[1].strip())
-         
+       
 def speed(threads_num):
     # thread_num for number of threads
     # get threads speed in MHz by the number
@@ -72,3 +72,16 @@ def temp():
     # return cpu temperature in celcius
     cputemp = subprocess.run("sensors | grep -m1 'Tctl'", shell=True, capture_output=True, text=True).stdout
     return float(cputemp.split(":")[1].strip().replace('+','').replace("°C",''))
+
+def L1data(result):
+    # return Level 1 data cache
+    if result == "single":
+        l1d_sum = subprocess.run("lscpu | grep 'L1d'", shell=True, capture_output=True, text=True).stdout
+        l1d_sum = l1d_sum.split(':')[1].strip().split()
+        l1d = int(l1d_sum[0].strip()) # get Level 1 data cache value that already multyplied by instances
+        ins = int(l1d_sum[2].strip().replace('(','')) # get number of instances
+        return int(l1d / ins) # devide L1 data cache with number of instances to return L1 data cacahe for single instances
+    elif result == "sum":
+        l1d_sum = subprocess.run("lscpu | grep 'L1d'", shell=True, capture_output=True, text=True).stdout
+        l1d_sum = l1d_sum.split(':')[1].strip()
+        return l1d_sum
