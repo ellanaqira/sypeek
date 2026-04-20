@@ -17,6 +17,15 @@ def used():
         if "Mem" in k:
             k = float(k.split()[2].strip()) / 1000000
             return f"{k:.2f}"  
+        
+def available():
+    # return available memory
+    result = subprocess.run("free", capture_output=True, text=True).stdout
+    result = result.split('\n')
+    for k in result:
+        if "Mem" in k:
+            k =  float(k.split()[6].strip()) / 1000000
+            return f"{k:.2f}"
 
 def free():
     # return free memory
