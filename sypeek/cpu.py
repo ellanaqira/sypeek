@@ -34,41 +34,27 @@ def family():
     # return cpu family
     fam = subprocess.run("cpuid | grep -m1 'family'", shell=True, capture_output=True, text=True).stdout
     return fam.split('=')[1].strip()
-print(family())
+
 def family_synth():
     # return cpu family synth
-    result = subprocess.run("cpuid", capture_output=True, text=True).stdout
-    result = result.split('\n')
-    for k in result:
-        if "(family synth)" in k:
-            k = k.split('=')[1].strip()
-            return k
-            
-def model_synth():
-    # return cpu model synth
-    result = subprocess.run("cpuid", capture_output=True, text=True).stdout
-    result = result.split('\n')
-    for k in result:
-        if "(model synth)" in k:
-            k = k.split('=')[1].strip()
-            return k
+    fam_syn = subprocess.run("cpuid | grep -m1 'family synth'", shell=True, capture_output=True, text=True).stdout
+    return fam_syn.split('=')[1].strip()
 
 def model():
     # return cpu model
-    result = subprocess.run("cpuid", capture_output=True, text=True).stdout
-    result = result.split('\n')
-    for k in result:
-        if "model" in k:
-            k = k.split('=')[1].strip()
-            return k
+    modl = subprocess.run("cpuid | grep -m1 'model'", shell=True, capture_output=True, text=True).stdout
+    return modl.split('=')[1].strip()
+
+def model_synth():
+    # return cpu model synth
+    modl_syn = subprocess.run("cpuid | grep -m1 'model synth'", shell=True, capture_output=True, text=True).stdout
+    return modl_syn.split('=')[1].strip()
 
 def stepping():
     # return cpu stepping value
-    with open('/proc/cpuinfo', 'r') as file:
-        for line in file:
-            if line.startswith('stepping'):
-                return(line.split(':')[1].strip())
-            
+    step = subprocess.run("lscpu | grep -m1 'Stepping'", shell=True, capture_output=True, text=True).stdout
+    return int(step.split(':')[1].strip())
+         
 def speed(threads_num):
     # thread_num for number of threads
     # get threads speed in MHz by the number
@@ -83,10 +69,5 @@ def speed(threads_num):
                             return(line.split(':')[1].strip())          
 
 def temp():
-    # return cpu temperature in celcius
-    result = subprocess.run("sensors", capture_output=True, text=True).stdout
-    result = result.split('\n')
-    for k in result:
-        if "Tctl" in k:
-            k = k.split(':')[1].strip()
-            return float(k.replace('+','').replace("°C",''))
+    cputemp = subprocess.run("sensors | grep -m1 'Tctl'", shell=True, capture_output=True, text=True).stdout
+    return float(cputemp.split(":")[1].strip().replace('+','').replace("°C",''))
