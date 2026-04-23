@@ -73,15 +73,15 @@ def temp():
     cputemp = subprocess.run("sensors | grep -m1 'Tctl'", shell=True, capture_output=True, text=True).stdout
     return float(cputemp.split(":")[1].strip().replace('+','').replace("°C",''))
 
-def L1data(result):
+def L1d(sum=False):
     # return Level 1 data cache
-    if result == "single":
+    if sum == False:
         l1d_sum = subprocess.run("lscpu | grep 'L1d'", shell=True, capture_output=True, text=True).stdout
         l1d_sum = l1d_sum.split(':')[1].strip().split()
         l1d = int(l1d_sum[0].strip()) # get Level 1 data cache value that already multyplied by instances
         ins = int(l1d_sum[2].strip().replace('(','')) # get number of instances
         return int(l1d / ins) # devide L1 data cache with number of instances to return L1 data cacahe for single instances
-    elif result == "sum":
+    elif sum == True:
         l1d_sum = subprocess.run("lscpu | grep 'L1d'", shell=True, capture_output=True, text=True).stdout
         l1d_sum = l1d_sum.split(':')[1].strip()
         return l1d_sum
