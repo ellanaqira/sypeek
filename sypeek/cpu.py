@@ -72,29 +72,15 @@ def temp():
     # return cpu temperature in celcius
     cputemp = subprocess.run("sensors | grep -m1 'Tctl'", shell=True, capture_output=True, text=True).stdout
     return float(cputemp.split(":")[1].strip().replace('+','').replace("°C",''))
-
-def L1(cache='', single=True):
+  
+def L1(cache=''):
+    # return level 1 data cache
     if cache == 'd':
-        # return Level 1 data cache in KiB
-        if single == True:
-            l1d_single = subprocess.run("lscpu | grep 'L1d'", shell=True, capture_output=True, text=True).stdout
-            l1d_single = l1d_single.split(':')[1].strip().split()
-            l1d = int(l1d_single[0].strip()) # get Level 1 data cache value that already multyplied by instances
-            ins = int(l1d_single[2].strip().replace('(','')) # get number of instances
-            return int(l1d / ins) # devide L1 data cache with number of instances to return L1 data cacahe for single instances
-        elif single == False:
-            l1d_sum = subprocess.run("lscpu | grep 'L1d'", shell=True, capture_output=True, text=True).stdout
-            l1d_sum = l1d_sum.split(':')[1].strip()
-            return l1d_sum
+        l1 = subprocess.run("cpuid | grep -m4 'synth size'", shell=True, capture_output=True, text=True).stdout
+        l1 = int(l1.split('\n')[0].split()[3].strip())
+        return l1
+    # return level 1 data instruction
     elif cache == 'i':
-        # return Level 1 instruction cache in KiB
-        if single == True:
-            l1i_single = subprocess.run("lscpu | grep 'L1i'", shell=True, capture_output=True, text=True).stdout
-            l1i_single = l1i_single.split(':')[1].strip().split()
-            l1i = int(l1i_single[0].strip()) # get Level 1 instruction cache value that already multyplied by instances
-            ins = int(l1i_single[2].strip().replace('(','')) # get number of instances
-            return int(l1i / ins) # devide L1 instruction cache with number of instances to return L1 instruction cacahe for single instances
-        elif single == False:
-            l1i_sum = subprocess.run("lscpu | grep 'L1i'", shell=True, capture_output=True, text=True).stdout
-            l1i_sum = l1i_sum.split(':')[1].strip()
-            return l1i_sum
+        l1 = subprocess.run("cpuid | grep -m4 'synth size'", shell=True, capture_output=True, text=True).stdout
+        l1 = int(l1.split('\n')[1].split()[3].strip())
+        return l1
