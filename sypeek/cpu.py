@@ -81,11 +81,10 @@ def speed(threads_num):
                         if line.startswith("cpu MHz"):
                             return(line.split(':')[1].strip())  
 
-# def temp():
-#     # return cpu temperature in celcius
-#     cputemp = subprocess.run("sensors | grep -m1 'Tctl'", shell=True, capture_output=True, text=True).stdout
-#     return float(cputemp.split(":")[1].strip().replace('+','').replace("°C",''))
-  
+def temp():
+    # return cpu temperature in celcius
+    return(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
+
 # def L1(cache=''):
 #     # return level 1 data cache
 #     if cache == 'd':
