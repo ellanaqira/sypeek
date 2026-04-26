@@ -1,86 +1,99 @@
-import subprocess 
+import subprocess
+
+def _get_data(command, keyword):
+    data = subprocess.run(command, capture_output=True, text=True)
+    data = data.stdout.splitlines()
+    for line in data:
+        if keyword in line:
+            try:
+                return line.split(':')[1].strip()
+            except IndexError:
+                return line.split('=')[1].strip()
+    return None
 
 def vendorid():
     # return processor vendors id name
-    cpu_venid = subprocess.run("lscpu | grep 'Vendor ID'", shell=True, capture_output=True, text=True).stdout
-    return cpu_venid.split(':')[1].strip()
+    return _get_data("lscpu", "Vendor ID")
          
 def vendor():
     # return processor vendors name
-    id_ext = ["Authentic", "CPU", "Driven", "Geode by NSC", "Genuine", "isbetter!", "RiseRise", "Sis Sis", "UMC UMC", "VIA VIA"] # processor manufacturer ID string
-    cpu_ven = subprocess.run("lscpu | grep 'Vendor ID'", shell=True, capture_output=True, text=True).stdout
-    cpu_ven = cpu_ven.split(':')[1].strip()
-    for ext in id_ext:
-        if ext in cpu_ven:
-            return cpu_ven.replace(ext, '')
-
+    id_ext = {
+        "AuthenticAMD" : "AMD",
+        "GenuineIntel" : "Intel",
+        "TransmetaCPU" : "Transmeta",
+        "GenuineTMx86" : "Transmeta",
+        "NexGenDriven" : "NexGen",
+        "RiseRiseRise" : "Rise",
+        "SiS SiS SiS " : "SiS",
+        "UMC UMC UMC " : "UMC",
+        "HygonGenuine" : "Hygon",
+        "CentaurHauls" : "VIA"
+    }
+    vendor_id = _get_data("lscpu", "Vendor ID")
+    return id_ext.get(vendor_id)
+    
 def name():
     # return cpu model name
-    model_name = subprocess.run("lscpu | grep 'Model name'", shell=True, capture_output=True, text=True).stdout
-    return model_name.split(':')[1].strip()          
-            
-def cores():
-    # return number of cpu cores
-    core = subprocess.run("lscpu | grep 'Core'", shell=True, capture_output=True, text=True).stdout
-    return int(core.split(':')[1].strip())
+    return _get_data("lscpu", "Model name")   
 
 def threads():
-    # return number of threads
-    thread = subprocess.run("lscpu | grep 'Thread'", shell=True, capture_output=True, text=True).stdout
-    thread = int(thread.split(':')[1].strip())
-    return thread * cores()
+    # return number of thread(s) per core
+    return int(_get_data("lscpu", "Thread"))
+
+def cores(core = ''):
+    # return number of cpu logical core(s)
+    if core == 'l':
+        return int(_get_data("lscpu", "Core(s) per socket")) * threads()
+    # return number of cpu physical core(s)
+    elif core == 'f':
+        return int(_get_data("lscpu", "Core(s) per socket"))
 
 def family():
     # return cpu family
-    fam = subprocess.run("cpuid | grep -m1 'family'", shell=True, capture_output=True, text=True).stdout
-    return fam.split('=')[1].strip()
+    return _get_data("cpuid", "family")
 
 def family_synth():
     # return cpu family synth
-    fam_syn = subprocess.run("cpuid | grep -m1 'family synth'", shell=True, capture_output=True, text=True).stdout
-    return fam_syn.split('=')[1].strip()
+    return _get_data("cpuid", "family synth")
 
 def model():
     # return cpu model
-    modl = subprocess.run("cpuid | grep -m1 'model'", shell=True, capture_output=True, text=True).stdout
-    return modl.split('=')[1].strip()
-
+    return _get_data("cpuid", "model")
+    
 def model_synth():
     # return cpu model synth
-    modl_syn = subprocess.run("cpuid | grep -m1 'model synth'", shell=True, capture_output=True, text=True).stdout
-    return modl_syn.split('=')[1].strip()
+    return _get_data("cpuid", "model synth")
 
 def stepping():
     # return cpu stepping value
-    step = subprocess.run("lscpu | grep -m1 'Stepping'", shell=True, capture_output=True, text=True).stdout
-    return int(step.split(':')[1].strip())
+    return int(_get_data("lscpu", "Stepping"))
        
 def speed(threads_num):
     # thread_num for number of threads
     # get threads speed in MHz by the number
-    if threads_num < 0 or threads_num > (threads()-1):
-        return f"not included: thread number ({threads_num}) does not match the number of threads, which is (0-{threads()-1})"
+    if threads_num < 0 or threads_num > (cores(core='l')-1):
+        return f"not included: thread number ({threads_num}) does not match the number of threads, which is (0-{cores(core='l')-1})"
     else:
-        with open('/proc/cpuinfo', 'r') as file:
-            for line in file:
+        with open('/proc/cpuinfo') as f:
+            for line in f:
                 if line.startswith(f"processor	: {threads_num}"):
-                    for line in file:
+                    for line in f:
                         if line.startswith("cpu MHz"):
-                            return(line.split(':')[1].strip())          
+                            return(line.split(':')[1].strip())  
 
-def temp():
-    # return cpu temperature in celcius
-    cputemp = subprocess.run("sensors | grep -m1 'Tctl'", shell=True, capture_output=True, text=True).stdout
-    return float(cputemp.split(":")[1].strip().replace('+','').replace("°C",''))
+# def temp():
+#     # return cpu temperature in celcius
+#     cputemp = subprocess.run("sensors | grep -m1 'Tctl'", shell=True, capture_output=True, text=True).stdout
+#     return float(cputemp.split(":")[1].strip().replace('+','').replace("°C",''))
   
-def L1(cache=''):
-    # return level 1 data cache
-    if cache == 'd':
-        l1 = subprocess.run("cpuid | grep -m4 'synth size'", shell=True, capture_output=True, text=True).stdout
-        l1 = int(l1.split('\n')[0].split()[3].strip())
-        return l1
-    # return level 1 data instruction
-    elif cache == 'i':
-        l1 = subprocess.run("cpuid | grep -m4 'synth size'", shell=True, capture_output=True, text=True).stdout
-        l1 = int(l1.split('\n')[1].split()[3].strip())
-        return l1
+# def L1(cache=''):
+#     # return level 1 data cache
+#     if cache == 'd':
+#         l1 = subprocess.run("cpuid | grep -m4 'synth size'", shell=True, capture_output=True, text=True).stdout
+#         l1 = int(l1.split('\n')[0].split()[3].strip())
+#         return l1
+#     # return level 1 data instruction
+#     elif cache == 'i':
+#         l1 = subprocess.run("cpuid | grep -m4 'synth size'", shell=True, capture_output=True, text=True).stdout
+#         l1 = int(l1.split('\n')[1].split()[3].strip())
+#         return l1
