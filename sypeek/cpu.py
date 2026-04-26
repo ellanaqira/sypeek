@@ -68,18 +68,19 @@ def stepping():
     # return cpu stepping value
     return int(_get_data("lscpu", "Stepping"))
        
-def speed(threads_num):
-    # thread_num for number of threads
-    # get threads speed in MHz by the number
-    if threads_num < 0 or threads_num > (cores(core='l')-1):
-        return f"not included: thread number ({threads_num}) does not match the number of threads, which is (0-{cores(core='l')-1})"
-    else:
-        with open('/proc/cpuinfo') as f:
-            for line in f:
-                if line.startswith(f"processor	: {threads_num}"):
-                    for line in f:
-                        if line.startswith("cpu MHz"):
-                            return(line.split(':')[1].strip())  
+def speed(core_num):
+    # core_num for number of logical core
+    # return ValueError if core num < 0 or > logical core number value from cores function
+    if core_num < 0 or core_num > (cores(core='l')-1):
+        raise ValueError(f"core number must be between 0 and {(cores(core='l'))-1}")
+    
+    # get logical core speed in MHz by the number of order
+    with open("/proc/cpuinfo") as f:
+        for line in f:
+            if line.startswith(f"processor	: {core_num}"):
+                for line in f:
+                    if line.startswith("cpu MHz"):
+                        return float(line.split(':')[1].strip())
 
 def temp():
     # return cpu temperature in celcius
