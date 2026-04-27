@@ -69,18 +69,29 @@ def stepping():
     return int(_get_data("lscpu", "Stepping"))
        
 def speed(core_num):
-    # core_num for number of logical core
-    # return ValueError if core num < 0 or > logical core number value from cores function
-    if core_num < 0 or core_num > (cores(core='l')-1):
-        raise ValueError(f"core number must be between 0 and {(cores(core='l'))-1}")
-    
-    # get logical core speed in MHz by the number of order
+    # return core speed in MHz by the number of order (core_num)
+    cpus = []
     with open("/proc/cpuinfo") as f:
+        cpu = {}
         for line in f:
-            if line.startswith(f"processor	: {core_num}"):
-                for line in f:
-                    if line.startswith("cpu MHz"):
-                        return float(line.split(':')[1].strip())
+            line = line.strip()
+            if not line:
+                # if reach the empty line
+                if cpu:
+                    cpus.append(cpu)
+                    cpu = {}
+                continue
+            # split the line by ':' and added the key and value into cpu dictionary
+            key, value = [x.strip() for x in line.split(":", 1)]
+            cpu[key] = value
+        # store the last cpu info, because there is no empty line at the end of the file  
+        if cpu:
+            cpus.append(cpu)
+    # return ValueError if core_num is out of range
+    if core_num < 0 or core_num >= len(cpus):
+        raise ValueError(f"core number must be between 0 and {len(cpus)-1}")
+     # return core speed
+    return float(cpus[core_num].get("cpu MHz", 0))
 
 def temp():
     # return cpu temperature in celcius
