@@ -40,10 +40,10 @@ def threads():
     # return number of thread(s) per core
     return int(_get_data("lscpu", "Thread"))
 
-def cores(core = ''):
+def cores(core: str):
     # return number of cpu logical core(s)
     if core == 'l':
-        return int(_get_data("lscpu", "Core(s) per socket")) * threads()
+        return int(_get_data("lscpu", "Core(s) per socket")) * int(_get_data("lscpu", "Thread"))
     # return number of cpu physical core(s)
     elif core == 'f':
         return int(_get_data("lscpu", "Core(s) per socket"))
@@ -68,7 +68,7 @@ def stepping():
     # return cpu stepping value
     return int(_get_data("lscpu", "Stepping"))
        
-def speed(core_num):
+def speed(core_num: int):
     # return core speed in MHz by the number of order (core_num)
     cpus = []
     with open("/proc/cpuinfo") as f:
