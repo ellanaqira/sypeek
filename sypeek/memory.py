@@ -1,26 +1,38 @@
 import subprocess
 
-def _get_free_data(keyword:str, index:int):
+def _get_free_data(keyword: str):
+    memory = []
+    memo_data = {}
     data = subprocess.run("free", capture_output=True, text=True)
     data = data.stdout.splitlines()
     for line in data:
-        if keyword in line:
-            return line.split()[index].strip()
-    return None
+        line = line.split()
+        memory.append(line)
+        continue
+
+    del memory[1][0], memory[2]
+
+    for key, value in zip(memory[0], memory[1]):
+        memo_data[key] = value
+        continue
+
+    # return value in kibibytes - 1 kibibyte (KiB) is 1024 bytes.    
+    return int(memo_data[keyword])
 
 def total():
-    # return total memory in Gigabytes
-    return float(_get_free_data("Mem", 1)) / 1000000
+    # return total memory
+    return _get_free_data("total")
 
 def used():
-    # return used memory in Gigabytes
-    return float(_get_free_data("Mem", 2)) / 1000000
+    # return used memory
+    return _get_free_data("used")
 
 def free():
-    # return free memory in Gigabytes
-    return float(_get_free_data("Mem", 3)) / 1000000
+    # return free memory
+    return _get_free_data("free")
 
 def available():
-    # return available memory in Gigabytes
-    return float(_get_free_data("Mem", 6)) / 1000000
+    # return available memory
+    return _get_free_data("available")
+
             
