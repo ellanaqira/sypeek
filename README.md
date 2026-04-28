@@ -11,7 +11,7 @@ from sypeek import *
 # return cpu name and cpu temperature in celcius
 print(f"=====(CPU info)=====")
 print(f"name : {cpu.name()}")
-print(f"temp : {cpu.temp()} °C")
+print(f"temp : {cpu.temp('c')} °C")
 
 # return total memory and used memory
 print("=====(Memo info)=====")
