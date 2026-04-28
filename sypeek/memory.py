@@ -1,26 +1,26 @@
 import subprocess
 
+def _get_free_data(keyword:str, index:int):
+    data = subprocess.run("free", capture_output=True, text=True)
+    data = data.stdout.splitlines()
+    for line in data:
+        if keyword in line:
+            return line.split()[index].strip()
+    return None
+
 def total():
     # return total memory in Gigabytes
-    result = subprocess.run("free | grep 'Mem'", shell=True ,capture_output=True, text=True).stdout
-    result = float(result.split()[1].strip()) / 1000000
-    return result
+    return float(_get_free_data("Mem", 1)) / 1000000
 
 def used():
     # return used memory in Gigabytes
-    result = subprocess.run("free | grep 'Mem'", shell=True, capture_output=True, text=True).stdout
-    result = float(result.split()[2].strip()) / 1000000
-    return result
-        
+    return float(_get_free_data("Mem", 2)) / 1000000
+
 def free():
-    # return free memory
-    result = subprocess.run("free | grep 'Mem'", shell=True, capture_output=True, text=True).stdout
-    result = float(result.split()[3].strip()) / 1000000
-    return result
+    # return free memory in Gigabytes
+    return float(_get_free_data("Mem", 3)) / 1000000
 
 def available():
-    # return available memory
-    result = subprocess.run("free | grep 'Mem'", shell=True, capture_output=True, text=True).stdout
-    result = float(result.split()[6].strip()) / 1000000
-    return result
+    # return available memory in Gigabytes
+    return float(_get_free_data("Mem", 6)) / 1000000
             

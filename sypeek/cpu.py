@@ -1,6 +1,6 @@
 import subprocess
 
-def _get_data(command, keyword):
+def _get_data(command:str, keyword:str):
     data = subprocess.run(command, capture_output=True, text=True)
     data = data.stdout.splitlines()
     for line in data:
@@ -96,15 +96,3 @@ def speed(core_num: int):
 def temp():
     # return cpu temperature in celcius
     return(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
-
-# def L1(cache=''):
-#     # return level 1 data cache
-#     if cache == 'd':
-#         l1 = subprocess.run("cpuid | grep -m4 'synth size'", shell=True, capture_output=True, text=True).stdout
-#         l1 = int(l1.split('\n')[0].split()[3].strip())
-#         return l1
-#     # return level 1 data instruction
-#     elif cache == 'i':
-#         l1 = subprocess.run("cpuid | grep -m4 'synth size'", shell=True, capture_output=True, text=True).stdout
-#         l1 = int(l1.split('\n')[1].split()[3].strip())
-#         return l1
