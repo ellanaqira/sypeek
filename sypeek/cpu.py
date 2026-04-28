@@ -93,6 +93,17 @@ def speed(core_num: int):
      # return core speed
     return float(cpus[core_num].get("cpu MHz", 0))
 
-def temp():
-    # return cpu temperature in celcius
-    return(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
+def temp(scale: str):
+    # get cpu temperature in Celcius
+    celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
+    # return cpu temperature in Celcius
+    if scale == 'c':
+        return celcius
+    # return cpu temperature in Fahrenheit 
+    elif scale == 'f':
+        return (celcius * 9/5) + 32
+    # return cpu temperature in Kelvin
+    elif scale == 'k':
+        return celcius + 273.15
+    else:
+        raise ValueError(f"'{scale}' is not included.")
