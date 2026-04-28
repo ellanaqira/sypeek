@@ -7,5 +7,5 @@ print(f"temp : {cpu.temp()} °C")
 
 # return total memory and used memory
 print("=====(Memo info)=====")
-print(f"total: {memory.total()} GB")
-print(f"used : {memory.used()} GB")
+print(f"total: {memory.total()}")
+print(f"used : {memory.used()}")

@@ -15,8 +15,8 @@ print(f"temp : {cpu.temp()} °C")
 
 # return total memory and used memory
 print("=====(Memo info)=====")
-print(f"total: {memory.total()} GB")
-print(f"used : {memory.used()} GB")
+print(f"total: {memory.total()}")
+print(f"used : {memory.used()}")
 ``` 
 output:
 ```
@@ -24,8 +24,8 @@ output:
 name : Intel Core i5 7200u
 temp : 44.8 °C
 =====(Memo info)=====
-total: 16.05 GB
-used : 4.68 GB
+total: 16053936 
+used : 5592892
 ```
 
 ## Status
