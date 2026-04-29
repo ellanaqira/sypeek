@@ -105,7 +105,7 @@ def temp(scale: str):
         raise ValueError(f"'{scale}' is not included.")
 
 
-def _get_level_data(order: int):
+def _get_level_cache(order: int):
     # get cache level data from cpuid
     cpuid_data = subprocess.run("cpuid", capture_output=True, text=True)
     cpuid_data = cpuid_data.stdout.splitlines()
@@ -125,3 +125,20 @@ def _get_level_data(order: int):
         cpuid_new_list.append(int(element))
     # return value in kibibytes - 1 kibibyte (KiB) is 1024 bytes.    
     return int(cpuid_new_list[order])
+
+
+def l1(type: str):
+    if type == 'd': # Level 1 data cache
+        return _get_level_cache(0)
+    elif type == 'i': # Level 1 instruction cache
+        return _get_level_cache(1)
+    else:
+        raise ValueError("type must be 'd' or 'i'")
+    
+def l2():
+    # return cpu Level 2 cache
+    return _get_level_cache(2)
+
+def l3():
+    # return cpu Level 3 cache
+    return _get_level_cache(3)
