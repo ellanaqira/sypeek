@@ -12,11 +12,9 @@ def _get_data(command:str, keyword:str):
     return None
 
 def vendorid():
-    # return processor vendors id name
     return _get_data("lscpu", "Vendor ID")
          
 def vendor():
-    # return processor vendors name
     id_ext = {
         "AuthenticAMD" : "AMD",
         "GenuineIntel" : "Intel",
@@ -75,35 +73,30 @@ def speed(core_num: int):
         cpu = {}
         for line in f:
             line = line.strip()
+
             if not line:
-                # if reach the empty line
                 if cpu:
                     cpus.append(cpu)
                     cpu = {}
                 continue
-            # split the line by ':' and added the key and value into cpu dictionary
             key, value = [x.strip() for x in line.split(":", 1)]
             cpu[key] = value
         # store the last cpu info, because there is no empty line at the end of the file  
         if cpu:
             cpus.append(cpu)
-    # return ValueError if core_num is out of range
+
     if core_num < 0 or core_num >= len(cpus):
         raise ValueError(f"core number must be between 0 and {len(cpus)-1}")
-     # return core speed
+    
     return float(cpus[core_num].get("cpu MHz", 0))
 
 def temp(scale: str):
-    # get cpu temperature in Celcius
     celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
-    # return cpu temperature in Celcius
     if scale == 'c':
-        return celcius
-    # return cpu temperature in Fahrenheit 
+        return celcius # Celcius
     elif scale == 'f':
-        return (celcius * 9/5) + 32
-    # return cpu temperature in Kelvin
+        return (celcius * 9/5) + 32 # Fahrenheit
     elif scale == 'k':
-        return celcius + 273.15
+        return celcius + 273.15 # Kelvin
     else:
         raise ValueError(f"'{scale}' is not included.")
