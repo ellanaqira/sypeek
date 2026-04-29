@@ -10,9 +10,6 @@ def _get_data(command:str, keyword:str):
             except IndexError:
                 return line.split('=')[1].strip()
     return None
-
-def vendorid():
-    return _get_data("lscpu", "Vendor ID")
          
 def vendor():
     id_ext = {
@@ -29,6 +26,10 @@ def vendor():
     }
     vendor_id = _get_data("lscpu", "Vendor ID")
     return id_ext.get(vendor_id)
+
+
+def vendorid():
+    return _get_data("lscpu", "Vendor ID")
     
 def name():
     # return cpu model name
@@ -65,6 +66,7 @@ def model_synth():
 def stepping():
     # return cpu stepping value
     return int(_get_data("lscpu", "Stepping"))
+
        
 def speed(core_num: int):
     # return core speed in MHz by the number of order (core_num)
@@ -89,6 +91,7 @@ def speed(core_num: int):
         raise ValueError(f"core number must be between 0 and {len(cpus)-1}")
     
     return float(cpus[core_num].get("cpu MHz", 0))
+
 
 def temp(scale: str):
     celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
