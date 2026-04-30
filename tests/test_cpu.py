@@ -22,6 +22,9 @@ def test_cpu_cores():
     with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
         cpu.cores('q')
 
+    with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
+        cpu.cores(8)
+
 def test_cpu_family():
     assert cpu.family() == "0xf (15)"
 
