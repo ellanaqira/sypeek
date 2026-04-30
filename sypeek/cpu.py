@@ -40,12 +40,16 @@ def threads():
     return int(_get_data("lscpu", "Thread"))
 
 def cores(core: str):
+    if type(core) != str:
+        raise ValueError("core must be 'l' or 'p'")
+    
     # return number of cpu logical core(s)
-    if core.lower() == 'l':
+    elif core.lower() == 'l':
         return int(_get_data("lscpu", "Core(s) per socket")) * int(_get_data("lscpu", "Thread"))
     # return number of cpu physical core(s)
     elif core.lower() == 'p':
         return int(_get_data("lscpu", "Core(s) per socket"))
+    
     else:
         raise ValueError("core must be 'l' or 'p'")
 

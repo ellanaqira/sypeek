@@ -1,10 +1,6 @@
 from sypeek import cpu
 import pytest
 
-# test_cpu.py
-from sypeek import cpu
-import pytest
-
 def test_cpu_vendor():
     assert cpu.vendor() == "AMD"
 
