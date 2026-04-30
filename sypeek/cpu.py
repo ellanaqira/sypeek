@@ -41,11 +41,13 @@ def threads():
 
 def cores(core: str):
     # return number of cpu logical core(s)
-    if core == 'l':
+    if core.lower() == 'l':
         return int(_get_data("lscpu", "Core(s) per socket")) * int(_get_data("lscpu", "Thread"))
     # return number of cpu physical core(s)
-    elif core == 'f':
+    elif core.lower() == 'p':
         return int(_get_data("lscpu", "Core(s) per socket"))
+    else:
+        raise ValueError("core must be 'l' or 'p'")
 
 def family():
     # return cpu family
@@ -95,11 +97,11 @@ def speed(core_num: int):
 
 def temp(scale: str):
     celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
-    if scale == 'c':
+    if scale.lower() == 'c':
         return celcius # Celcius
-    elif scale == 'f':
+    elif scale.lower() == 'f':
         return (celcius * 9/5) + 32 # Fahrenheit
-    elif scale == 'k':
+    elif scale.lower() == 'k':
         return celcius + 273.15 # Kelvin
     else:
         raise ValueError(f"'{scale}' is not included.")
@@ -128,9 +130,9 @@ def _get_level_cache(order: int):
 
 
 def l1(type: str):
-    if type == 'd': # Level 1 data cache
+    if type.lower() == 'd': # Level 1 data cache
         return _get_level_cache(0)
-    elif type == 'i': # Level 1 instruction cache
+    elif type.lower() == 'i': # Level 1 instruction cache
         return _get_level_cache(1)
     else:
         raise ValueError("type must be 'd' or 'i'")
