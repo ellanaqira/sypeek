@@ -13,17 +13,22 @@ def test_cpu_name():
 def test_cpu_threads():
     assert cpu.threads() == 2
 
+
 def test_cpu_cores():
     assert cpu.cores('l') == 8 # logical core(s)
+    assert cpu.cores('L') == 8
     assert cpu.cores('p') == 4 # physical core(s)
-    assert cpu.cores('L') == 8 # logical core(s)
-    assert cpu.cores('P') == 4 # physical core(s)
+    assert cpu.cores('P') == 4
 
     with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
         cpu.cores('q')
 
     with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
         cpu.cores(8)
+
+    with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
+        cpu.cores(True)
+
 
 def test_cpu_family():
     assert cpu.family() == "0xf (15)"
