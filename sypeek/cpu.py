@@ -43,15 +43,16 @@ def cores(core: str):
     if type(core) != str:
         raise ValueError("core must be 'l' or 'p'")
     
-    # return number of cpu logical core(s)
-    elif core.lower() == 'l':
-        return int(_get_data("lscpu", "Core(s) per socket")) * int(_get_data("lscpu", "Thread"))
-    # return number of cpu physical core(s)
-    elif core.lower() == 'p':
-        return int(_get_data("lscpu", "Core(s) per socket"))
-    
     else:
-        raise ValueError("core must be 'l' or 'p'")
+        # return number of cpu logical core(s)
+        if core.lower() == 'l':
+            return int(_get_data("lscpu", "Core(s) per socket")) * int(_get_data("lscpu", "Thread"))
+        # return number of cpu physical core(s)
+        elif core.lower() == 'p':
+            return int(_get_data("lscpu", "Core(s) per socket"))
+        
+        else:
+            raise ValueError("core must be 'l' or 'p'")
 
 def family():
     # return cpu family
@@ -100,16 +101,21 @@ def speed(core_num: int):
 
 
 def temp(scale: str):
-    celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
-    if scale.lower() == 'c':
-        return celcius # Celcius
-    elif scale.lower() == 'f':
-        return (celcius * 9/5) + 32 # Fahrenheit
-    elif scale.lower() == 'k':
-        return celcius + 273.15 # Kelvin
+    if type(scale) != str:
+        raise ValueError(f"temperature scale must be 'c', 'f', or 'k'")
+    
     else:
-        raise ValueError(f"'{scale}' is not included.")
-
+        celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
+        if scale.lower() == 'c':
+            return celcius # Celcius
+        elif scale.lower() == 'f':
+            return (celcius * 9/5) + 32 # Fahrenheit
+        elif scale.lower() == 'k':
+            return celcius + 273.15 # Kelvin
+            
+        else:
+            raise ValueError(f"temperature scale must be 'c', 'f', or 'k'")
+        
 
 def _get_level_cache(order: int):
     # get cache level data from cpuid
@@ -133,14 +139,18 @@ def _get_level_cache(order: int):
     return int(cpuid_new_list[order])
 
 
-def l1(type: str):
-    if type.lower() == 'd': # Level 1 data cache
-        return _get_level_cache(0)
-    elif type.lower() == 'i': # Level 1 instruction cache
-        return _get_level_cache(1)
-    else:
-        raise ValueError("type must be 'd' or 'i'")
+def l1(cache_type: str):
+    if type(cache_type) != str:
+        raise ValueError("cache type must be 'd' or 'i'")
     
+    else:
+        if cache_type.lower() == 'd': # Level 1 data cache
+            return _get_level_cache(0)
+        elif cache_type.lower() == 'i': # Level 1 instruction cache
+            return _get_level_cache(1)
+        else:
+            raise ValueError("cache type must be 'd' or 'i'")
+
 def l2():
     # return cpu Level 2 cache
     return _get_level_cache(2)
