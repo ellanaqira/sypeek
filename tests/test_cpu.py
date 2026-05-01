@@ -92,3 +92,29 @@ def test_cpu_temperature():
     with pytest.raises(ValueError, match="temperature scale must be 'c', 'f', or 'k'"):
         cpu.temp(True)
 
+
+def test_cpu_cache_level1():
+    assert cpu.l1('d') == 32768
+    assert cpu.l1('D') == 32768
+    assert cpu.l1('i') == 65536
+    assert cpu.l1('I') == 65536
+
+    # error handling
+    with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
+        cpu.l1('h')
+
+    with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
+        cpu.l1(5)
+
+    with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
+        cpu.l1(5.2)
+
+    with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
+        cpu.l1(True)
+
+
+def test_cpu_cache_level2():
+    assert cpu.l2() == 524288
+
+def test_cpu_cache_level3():
+    assert cpu.l3() == 4194304
