@@ -1,26 +1,27 @@
-from sypeek import cpu
 import pytest
+from sypeek import cpu
 
-def test_cpu_vendor():
+
+def test_get_cpu_vendor():
     assert cpu.vendor() == "AMD"
 
-def test_cpu_vendorid():
+def test_get_cpu_vendorid():
     assert cpu.vendorid() == "AuthenticAMD"
 
-def test_cpu_name():
+def test_get_cpu_name():
     assert cpu.name() == "AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx"
 
-def test_cpu_threads():
+def test_get_cpu_threads():
     assert cpu.threads() == 2
 
 
-def test_cpu_cores():
+def test_get_cpu_cores():
     assert cpu.cores('l') == 8 # logical core(s)
     assert cpu.cores('L') == 8
     assert cpu.cores('p') == 4 # physical core(s)
     assert cpu.cores('P') == 4
 
-    # error output
+def test_get_cpu_cores_error():
     with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
         cpu.cores('q')
 
@@ -31,23 +32,23 @@ def test_cpu_cores():
         cpu.cores(True)
 
 
-def test_cpu_family():
+def test_get_cpu_family():
     assert cpu.family() == "0xf (15)"
 
-def test_cpu_family_synth():
+def test_get_cpu_family_synth():
     assert cpu.family_synth() == "0x17 (23)"
 
-def test_cpu_model():
+def test_get_cpu_model():
     assert cpu.model() == "0x8 (8)"
 
-def test_cpu_model_synth():
+def test_get_cpu_model_synth():
     assert cpu.model_synth() == "0x18 (24)"
 
-def test_cpu_stepping():
+def test_get_cpu_stepping():
     assert cpu.stepping() == 1
 
 
-def test_cpu_speed():
+def test_get_cpu_speed():
     assert cpu.speed(0)
     assert cpu.speed(1)
     assert cpu.speed(2)
@@ -57,7 +58,7 @@ def test_cpu_speed():
     assert cpu.speed(6)
     assert cpu.speed(7)
 
-    # error output
+def test_get_cpu_speed_error():
     with pytest.raises(ValueError, match="core number must be between 0 and 7"):
         cpu.speed(8)
 
@@ -71,7 +72,7 @@ def test_cpu_speed():
         cpu.speed(True)
 
 
-def test_cpu_temperature():
+def test_get_cpu_temperature():
     assert cpu.temp('c')
     assert cpu.temp('C')
     assert cpu.temp('f')
@@ -79,7 +80,7 @@ def test_cpu_temperature():
     assert cpu.temp('k')
     assert cpu.temp('K')
 
-    #error output
+def test_get_cpu_temperature_error():
     with pytest.raises(ValueError, match="temperature scale must be 'c', 'f', or 'k'"):
         cpu.temp('x')
 
@@ -99,7 +100,7 @@ def test_cpu_cache_level1():
     assert cpu.l1('i') == 65536
     assert cpu.l1('I') == 65536
 
-    # error handling
+def test_cpu_cache_level1_error():
     with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
         cpu.l1('h')
 
