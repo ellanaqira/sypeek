@@ -13,6 +13,7 @@ def _get_data(command:str, keyword:str):
          
 def vendor():
     vendor_id_dict = {
+        # general vendor id
         "AuthenticAMD": "AMD",
         "CentaurHauls": "IDT",
         "CyrixInstead": "Cyrix",
@@ -31,11 +32,25 @@ def vendor():
         "Genuine  RDC": "RDC Semiconductor",
         "E2K MACHINE ": "MCST",
         "VIA VIA VIA ": "VIA",
-        "AMD ISBETTER": "AMD"
-    }
-    get_vendor_id = _get_data("lscpu", "Vendor ID")
+        "AMD ISBETTER": "AMD",
 
+        # open source CPU cores
+        "GenuineAo486": "ao486",
+        "MiSTer AO486": "ao486",
+
+        # virtual machines / emulator
+        "ConnectixCPU": "Connectix",
+        "Virtual CPU ": "Microsoft",
+        "Insignia 586": "Insignia",
+        "Compaq FX!32": "Compaq",
+        "PowerVM Lx86": "IBM",
+        "Neko Project": "Neko Project",
+    }
+
+    get_vendor_id = _get_data("lscpu", "Vendor ID")
     vendor = vendor_id_dict.get(get_vendor_id)
+    
+    # handling vendor id not found
     if vendor == None:
         return f"vendor name of '{get_vendor_id}' could not be found"
     else:
