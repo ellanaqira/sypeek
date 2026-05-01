@@ -90,14 +90,18 @@ def speed(core_num: int):
                 continue
             key, value = [x.strip() for x in line.split(":", 1)]
             cpu[key] = value
-        # store the last cpu info, because there is no empty line at the end of the file  
+        # store the last cpu information, because there is no empty line at the end of the file  
         if cpu:
             cpus.append(cpu)
 
-    if core_num < 0 or core_num >= len(cpus):
+    if type(core_num) != int:
         raise ValueError(f"core number must be between 0 and {len(cpus)-1}")
     
-    return float(cpus[core_num].get("cpu MHz", 0))
+    else:
+        if core_num < 0 or core_num >= len(cpus):
+            raise ValueError(f"core number must be between 0 and {len(cpus)-1}")
+        
+        return float(cpus[core_num].get("cpu MHz", 0))
 
 
 def temp(scale: str):
