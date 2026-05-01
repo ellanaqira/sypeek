@@ -69,11 +69,8 @@ def threads():
     return int(_get_data("lscpu", "Thread"))
 
 def cores(core: str):
-    if type(core) != str:
-        raise ValueError("core must be 'l' or 'p'")
-    
-    else:
-        # return number of cpu logical core(s)
+    try:
+    # return number of cpu logical core(s)
         if core.lower() == 'l':
             return int(_get_data("lscpu", "Core(s) per socket")) * int(_get_data("lscpu", "Thread"))
         # return number of cpu physical core(s)
@@ -81,7 +78,10 @@ def cores(core: str):
             return int(_get_data("lscpu", "Core(s) per socket"))
         
         else:
-            raise ValueError("core must be 'l' or 'p'")
+            return "core must be 'l' or 'p'"
+    except AttributeError:
+        return "core must be 'l' or 'p'"
+    
 
 def family():
     # return cpu family
@@ -124,20 +124,17 @@ def speed(core_num: int):
             cpus.append(cpu)
 
     if type(core_num) != int:
-        raise ValueError(f"core number must be between 0 and {len(cpus)-1}")
+        return f"core number must be between 0 and {len(cpus)-1}"
     
     else:
         if core_num < 0 or core_num >= len(cpus):
-            raise ValueError(f"core number must be between 0 and {len(cpus)-1}")
-        
+            return f"core number must be between 0 and {len(cpus)-1}"
+    
         return float(cpus[core_num].get("cpu MHz", 0))
-
+        
 
 def temp(scale: str):
-    if type(scale) != str:
-        raise ValueError(f"temperature scale must be 'c', 'f', or 'k'")
-    
-    else:
+    try:
         celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
         if scale.lower() == 'c':
             return celcius # Celcius
@@ -145,10 +142,12 @@ def temp(scale: str):
             return (celcius * 9/5) + 32 # Fahrenheit
         elif scale.lower() == 'k':
             return celcius + 273.15 # Kelvin
-            
         else:
-            raise ValueError(f"temperature scale must be 'c', 'f', or 'k'")
-        
+            return "temperature scale must be 'c', 'f', or 'k'"
+    
+    except AttributeError:
+        return "temperature scale must be 'c', 'f', or 'k'"
+                     
 
 def _get_level_cache(order: int):
     # get cache level data from cpuid
@@ -173,16 +172,17 @@ def _get_level_cache(order: int):
 
 
 def l1(cache_type: str):
-    if type(cache_type) != str:
-        raise ValueError("cache type must be 'd' or 'i'")
-    
-    else:
+    try:
         if cache_type.lower() == 'd': # Level 1 data cache
             return _get_level_cache(0)
         elif cache_type.lower() == 'i': # Level 1 instruction cache
             return _get_level_cache(1)
         else:
-            raise ValueError("cache type must be 'd' or 'i'")
+            return ("cache type must be 'd' or 'i'")
+        
+    except AttributeError:
+        return "cache type must be 'd' or 'i'"
+
 
 def l2():
     # return cpu Level 2 cache

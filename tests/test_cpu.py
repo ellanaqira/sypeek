@@ -22,15 +22,11 @@ def test_get_cpu_cores():
     assert cpu.cores('P') == 4
 
 def test_get_cpu_cores_error():
-    with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
-        cpu.cores('q')
-
-    with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
-        cpu.cores(8)
-
-    with pytest.raises(ValueError, match="core must be 'l' or 'p'"):
-        cpu.cores(True)
-
+    assert cpu.cores('q') == "core must be 'l' or 'p'"
+    assert cpu.cores(3) == "core must be 'l' or 'p'"
+    assert cpu.cores(3.4) == "core must be 'l' or 'p'"
+    assert cpu.cores(True) == "core must be 'l' or 'p'"
+    
 
 def test_get_cpu_family():
     assert cpu.family() == "0xf (15)"
@@ -59,17 +55,10 @@ def test_get_cpu_speed():
     assert cpu.speed(7)
 
 def test_get_cpu_speed_error():
-    with pytest.raises(ValueError, match="core number must be between 0 and 7"):
-        cpu.speed(8)
-
-    with pytest.raises(ValueError, match="core number must be between 0 and 7"):
-        cpu.speed(3.0)
-
-    with pytest.raises(ValueError, match="core number must be between 0 and 7"):
-        cpu.speed('0')
-
-    with pytest.raises(ValueError, match="core number must be between 0 and 7"):
-        cpu.speed(True)
+    assert cpu.speed(8) == "core number must be between 0 and 7"
+    assert cpu.speed(3.0) == "core number must be between 0 and 7"
+    assert cpu.speed('3') == "core number must be between 0 and 7"
+    assert cpu.speed(True) == "core number must be between 0 and 7"
 
 
 def test_get_cpu_temperature():
@@ -81,17 +70,10 @@ def test_get_cpu_temperature():
     assert cpu.temp('K')
 
 def test_get_cpu_temperature_error():
-    with pytest.raises(ValueError, match="temperature scale must be 'c', 'f', or 'k'"):
-        cpu.temp('x')
-
-    with pytest.raises(ValueError, match="temperature scale must be 'c', 'f', or 'k'"):
-        cpu.temp(2)
-
-    with pytest.raises(ValueError, match="temperature scale must be 'c', 'f', or 'k'"):
-        cpu.temp(2.0)
-
-    with pytest.raises(ValueError, match="temperature scale must be 'c', 'f', or 'k'"):
-        cpu.temp(True)
+    assert cpu.temp('x') == "temperature scale must be 'c', 'f', or 'k'"
+    assert cpu.temp(2) == "temperature scale must be 'c', 'f', or 'k'"
+    assert cpu.temp(2.0) == "temperature scale must be 'c', 'f', or 'k'"
+    assert cpu.temp(True) == "temperature scale must be 'c', 'f', or 'k'"
 
 
 def test_cpu_cache_level1():
@@ -101,17 +83,10 @@ def test_cpu_cache_level1():
     assert cpu.l1('I') == 65536
 
 def test_cpu_cache_level1_error():
-    with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
-        cpu.l1('h')
-
-    with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
-        cpu.l1(5)
-
-    with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
-        cpu.l1(5.2)
-
-    with pytest.raises(ValueError, match="cache type must be 'd' or 'i'"):
-        cpu.l1(True)
+    assert cpu.l1('h') == "cache type must be 'd' or 'i'"
+    assert cpu.l1(5) == "cache type must be 'd' or 'i'"
+    assert cpu.l1(5.0) == "cache type must be 'd' or 'i'"
+    assert cpu.l1(True) == "cache type must be 'd' or 'i'"
 
 
 def test_cpu_cache_level2():
