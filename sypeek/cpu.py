@@ -12,21 +12,35 @@ def _get_data(command:str, keyword:str):
     return None
          
 def vendor():
-    id_ext = {
-        "AuthenticAMD" : "AMD",
-        "GenuineIntel" : "Intel",
-        "TransmetaCPU" : "Transmeta",
-        "GenuineTMx86" : "Transmeta",
-        "NexGenDriven" : "NexGen",
-        "RiseRiseRise" : "Rise",
-        "SiS SiS SiS " : "SiS",
-        "UMC UMC UMC " : "UMC",
-        "HygonGenuine" : "Hygon",
-        "CentaurHauls" : "VIA"
+    vendor_id_dict = {
+        "AuthenticAMD": "AMD",
+        "CentaurHauls": "IDT",
+        "CyrixInstead": "Cyrix",
+        "GenuineIntel": "Intel",
+        "GenuineIotel": "Intel",
+        "TransmetaCPU": "Transmeta",
+        "GenuineTMx86": "Transmeta",
+        "Geode by NSC": "National Semiconductor",
+        "NexGenDriven": "NexGen",
+        "RiseRiseRise": "Rise",
+        "SiS SiS SiS ": "SiS",
+        "UMC UMC UMC ": "UMC",
+        "Vortex86 SoC": "DM&P",
+        "  Shanghai  ": "Zhaoxin",
+        "HygonGenuine": "Hygon",
+        "Genuine  RDC": "RDC Semiconductor",
+        "E2K MACHINE ": "MCST",
+        "VIA VIA VIA ": "VIA",
+        "AMD ISBETTER": "AMD"
     }
-    vendor_id = _get_data("lscpu", "Vendor ID")
-    return id_ext.get(vendor_id)
+    get_vendor_id = _get_data("lscpu", "Vendor ID")
 
+    vendor = vendor_id_dict.get(get_vendor_id)
+    if vendor == None:
+        return f"vendor name of '{get_vendor_id}' could not be found"
+    else:
+        return vendor
+    
 
 def vendorid():
     return _get_data("lscpu", "Vendor ID")
