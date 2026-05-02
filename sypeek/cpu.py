@@ -11,7 +11,7 @@ def _get_data(command:str, keyword:str):
                 return line.split('=')[1].strip()
     return None
          
-def vendor():
+def cpu_vendor():
     vendor_id_dict = {
         # general vendor id
         "AuthenticAMD": "AMD",
@@ -57,18 +57,18 @@ def vendor():
         return vendor
     
 
-def vendorid():
+def cpu_vendorid():
     return _get_data("lscpu", "Vendor ID")
     
-def name():
+def cpu_name():
     # return cpu model name
     return _get_data("lscpu", "Model name")   
 
-def threads():
+def cpu_threads():
     # return number of thread(s) per core
     return int(_get_data("lscpu", "Thread"))
 
-def cores(core: str):
+def cpu_cores(core: str):
     try:
     # return number of cpu logical core(s)
         if core.lower() == 'l':
@@ -83,28 +83,28 @@ def cores(core: str):
         return "core must be 'l' or 'p'"
     
 
-def family():
+def cpu_family():
     # return cpu family
     return _get_data("cpuid", "family")
 
-def family_synth():
+def cpu_family_synth():
     # return cpu family synth
     return _get_data("cpuid", "family synth")
 
-def model():
+def cpu_model():
     # return cpu model
     return _get_data("cpuid", "model")
     
-def model_synth():
+def cpu_model_synth():
     # return cpu model synth
     return _get_data("cpuid", "model synth")
 
-def stepping():
+def cpu_stepping():
     # return cpu stepping value
     return int(_get_data("lscpu", "Stepping"))
 
        
-def speed(core_num: int):
+def cpu_speed(core_num: int):
     # return core speed in MHz by the number of order (core_num)
     cpus = []
     with open("/proc/cpuinfo") as f:
@@ -133,7 +133,7 @@ def speed(core_num: int):
         return float(cpus[core_num].get("cpu MHz", 0))
         
 
-def temp(scale: str):
+def cpu_temp(scale: str):
     try:
         celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
         if scale.lower() == 'c':
@@ -171,7 +171,7 @@ def _get_level_cache(order: int):
     return int(cpuid_new_list[order])
 
 
-def l1(cache_type: str):
+def cpu_l1c(cache_type: str):
     try:
         if cache_type.lower() == 'd': # Level 1 data cache
             return _get_level_cache(0)
@@ -184,10 +184,10 @@ def l1(cache_type: str):
         return "cache type must be 'd' or 'i'"
 
 
-def l2():
+def cpu_l2c():
     # return cpu Level 2 cache
     return _get_level_cache(2)
 
-def l3():
+def cpu_l3c():
     # return cpu Level 3 cache
     return _get_level_cache(3)
