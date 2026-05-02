@@ -1,38 +1,63 @@
 import subprocess
 
-def _get_free_data(keyword: str):
-    memory = []
-    memo_data = {}
-    data = subprocess.run("free", capture_output=True, text=True)
-    data = data.stdout.splitlines()
-    for line in data:
-        line = line.split()
-        memory.append(line)
-        continue
 
-    del memory[1][0], memory[2]
+def _get_data(about: str, keyword: str):
+    data_list = []
+    data_dict = {}
 
-    for key, value in zip(memory[0], memory[1]):
-        memo_data[key] = value
-        continue
+    try:
+        data = subprocess.run("free", capture_output=True, text=True)
+    except FileNotFoundError:
+        return "something went wrong, couldn't get data from memory"
+    else:
+        data = data.stdout.splitlines()
+        for line in data:
+            line = line.split()
+            data_list.append(line)
 
-    # return value in kibibytes - 1 kibibyte (KiB) is 1024 bytes.    
-    return int(memo_data[keyword])
+        if about == "memo":
+            del data_list[1][0], data_list[2]
+        elif about == "swap":
+            del data_list[1], data_list[1][0]
 
-def total():
+        for key, value in zip(data_list[0], data_list[1]):
+            data_dict[key] = value
+
+        # return value in kibibytes - 1 kibibyte (KiB) is 1024 bytes.    
+        return int(data_dict[keyword])
+    
+
+
+# Memory ==============================================
+
+def mem_total():
     # return total memory
-    return _get_free_data("total")
+    return _get_data("memo", "total")
 
-def used():
+def mem_used():
     # return used memory
-    return _get_free_data("used")
+    return _get_data("memo", "used")
 
-def free():
+def mem_free():
     # return free memory
-    return _get_free_data("free")
+    return _get_data("memo", "free")
 
-def available():
+def mem_available():
     # return available memory
-    return _get_free_data("available")
+    return _get_data("memo", "available")
 
+
+# Swap Memory =========================================
+
+def swap_mem_total():
+    # return total swap memory
+    return _get_data("swap", "total")
+
+def swap_mem_used():
+    # return used swap memory
+    return _get_data("swap", "used")
+
+def swap_mem_free():
+    # return free swap memory
+    return _get_data("swap", "free")
             
