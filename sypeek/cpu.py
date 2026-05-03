@@ -184,25 +184,34 @@ def cpu_temp(scale: str):
 
 def _get_level_cache(order: int):
     # get cache level data from cpuid
-    cpuid_data = subprocess.run("cpuid", capture_output=True, text=True)
-    cpuid_data = cpuid_data.stdout.splitlines()
-    cpuid_list = []
-    for line in cpuid_data:
-        line = line.strip()
-        if line.startswith("(synth size)"):
-            line = line.split('=')[1].strip()
-            cpuid_list.append(line)
-            continue
+    try:
+        cpuid_data = subprocess.run("cpuid", capture_output=True, text=True)
 
-    cpuid_list = list(dict.fromkeys(cpuid_list))
+    except FileNotFoundError:
+        return "something went wrong, couldn't get data from cpu"
+    
+    else:
+        cpuid_data = cpuid_data.stdout.splitlines()
+        cpuid_list = []
+        for line in cpuid_data:
+            line = line.strip()
+            if line.startswith("(synth size)"):
+                line = line.split('=')[1].strip()
+                cpuid_list.append(line)
+                continue
 
-    cpuid_new_list = []
-    for element in cpuid_list:
-        element = element.split()[0].strip()
-        cpuid_new_list.append(int(element))
-        
-    # return value in kibibytes - 1 kibibyte (KiB) is 1024 bytes.    
-    return int(cpuid_new_list[order])
+        cpuid_list = list(dict.fromkeys(cpuid_list))
+
+        cpuid_new_list = []
+        for element in cpuid_list:
+            element = element.split()[0].strip()
+            cpuid_new_list.append(int(element))
+            
+        # return value in kibibytes - 1 kibibyte (KiB) is 1024 bytes.
+        try:    
+            return int(cpuid_new_list[order])
+        except IndexError:
+            return "something went wrong, couldn't get data from cpu"
 
 
 def cpu_l1c(cache_type: str):

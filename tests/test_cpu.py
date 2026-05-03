@@ -55,10 +55,10 @@ def test_get_cpu_speed():
     assert cpu.cpu_speed(7)
 
 def test_get_cpu_speed_error():
-    assert cpu.cpu_speed(8) == "core number must be between 0 and 7"
-    assert cpu.cpu_speed(3.0) == "core number must be between 0 and 7"
-    assert cpu.cpu_speed('3') == "core number must be between 0 and 7"
-    assert cpu.cpu_speed(True) == "core number must be between 0 and 7"
+    assert cpu.cpu_speed(8) == "core number must be int() and between 0 and 7"
+    assert cpu.cpu_speed(3.0) == "core number must be int() and between 0 and 7"
+    assert cpu.cpu_speed('3') == "core number must be int() and between 0 and 7"
+    assert cpu.cpu_speed(True) == "core number must be int() and between 0 and 7"
 
 
 def test_get_cpu_temperature():
