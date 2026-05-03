@@ -1,11 +1,14 @@
 import subprocess
-from pathlib import Path
+
+
+_GENERAL_ERROR_MESSAGE: str = "something went wrong, couldn't get data from cpu"
+
 
 def _get_data(command:str, keyword:str):
     try:
         data = subprocess.run(command, capture_output=True, text=True)
     except FileNotFoundError:
-        return "something went wrong, couldn't get data from cpu"
+        return _GENERAL_ERROR_MESSAGE
     else:
         data = data.stdout.splitlines()
         for line in data:
@@ -15,7 +18,7 @@ def _get_data(command:str, keyword:str):
                 except IndexError:
                     return line.split('=')[1].strip()
                 
-        return "something went wrong, couldn't get data from cpu"
+        return _GENERAL_ERROR_MESSAGE
          
 def cpu_vendor():
     vendor_id_dict = {
@@ -147,15 +150,17 @@ def cpu_speed(core_num: int):
                 cpus.append(cpu)
 
     except FileNotFoundError:
-        return "something went wrong, couldn't get data from cpu"
+        return _GENERAL_ERROR_MESSAGE
 
     else:
+        _CPU_SPEED_ERROR_MESSAGE = f"core number must be int() and between 0 and {len(cpus)-1}"
+
         if type(core_num) != int:
-            return f"core number must be int() and between 0 and {len(cpus)-1}"
+            return _CPU_SPEED_ERROR_MESSAGE
         
         else:
             if core_num < 0 or core_num >= len(cpus):
-                return f"core number must be int() and between 0 and {len(cpus)-1}"
+                return _CPU_SPEED_ERROR_MESSAGE
         
             return float(cpus[core_num].get("cpu MHz", 0))
  
@@ -168,6 +173,8 @@ def cpu_temp(scale: str):
         return _get_data("sensors", "Tctl")
     
     else:
+        _CPU_TEMPERATURE_ERROR_MESSAGE = "temperature scale must be 'c', 'f', or 'k'"
+
         try:
             if scale.lower() == 'c':
                 return celcius # Celcius
@@ -176,10 +183,10 @@ def cpu_temp(scale: str):
             elif scale.lower() == 'k':
                 return celcius + 273.15 # Kelvin
             else:
-                return "temperature scale must be 'c', 'f', or 'k'"
+                return _CPU_TEMPERATURE_ERROR_MESSAGE
         
         except AttributeError:
-            return "temperature scale must be 'c', 'f', or 'k'"
+            return _CPU_TEMPERATURE_ERROR_MESSAGE
                     
 
 def _get_level_cache(order: int):
@@ -188,7 +195,7 @@ def _get_level_cache(order: int):
         cpuid_data = subprocess.run("cpuid", capture_output=True, text=True)
 
     except FileNotFoundError:
-        return "something went wrong, couldn't get data from cpu"
+        return _GENERAL_ERROR_MESSAGE
     
     else:
         cpuid_data = cpuid_data.stdout.splitlines()
@@ -211,20 +218,22 @@ def _get_level_cache(order: int):
         try:    
             return int(cpuid_new_list[order])
         except IndexError:
-            return "something went wrong, couldn't get data from cpu"
+            return _GENERAL_ERROR_MESSAGE
 
 
 def cpu_l1c(cache_type: str):
+    _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
+    
     try:
         if cache_type.lower() == 'd': # Level 1 data cache
             return _get_level_cache(0)
         elif cache_type.lower() == 'i': # Level 1 instruction cache
             return _get_level_cache(1)
         else:
-            return ("cache type must be 'd' or 'i'")
+            return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
         
     except AttributeError:
-        return "cache type must be 'd' or 'i'"
+        return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
 
 
 def cpu_l2c():
