@@ -1,14 +1,16 @@
 import subprocess
 
 
-_GENERAL_ERROR_MESSAGE: str = "something went wrong, couldn't get data from cpu"
+_CPU_GENERAL_ERROR_MESSAGE = "something went wrong, couldn't get data from cpu"
 
 
 def _get_data(command:str, keyword:str):
     try:
         data = subprocess.run(command, capture_output=True, text=True)
+
     except FileNotFoundError:
-        return _GENERAL_ERROR_MESSAGE
+        return _CPU_GENERAL_ERROR_MESSAGE
+    
     else:
         data = data.stdout.splitlines()
         for line in data:
@@ -18,7 +20,7 @@ def _get_data(command:str, keyword:str):
                 except IndexError:
                     return line.split('=')[1].strip()
                 
-        return _GENERAL_ERROR_MESSAGE
+        return _CPU_GENERAL_ERROR_MESSAGE
          
 def cpu_vendor():
     vendor_id_dict = {
@@ -72,37 +74,38 @@ def cpu_vendorid():
 def cpu_name():
     # return cpu model name
     return _get_data("lscpu", "Model name")
- 
 
 def cpu_threads():
     # return number of thread(s) per core
     try:
         return int(_get_data("lscpu", "Thread"))
     except ValueError:
-        return _get_data("lscpu", "Thread")
+        return _CPU_GENERAL_ERROR_MESSAGE
     
 
 def cpu_cores(core: str):
+    _CPU_CORES_ERROR_MESSAGE = "core must be 'l' or 'p'"
+
     try:
         # return number of cpu logical core(s)
         if core.lower() == 'l':
             try:
                 return int(_get_data("lscpu", "Core(s) per socket")) * int(_get_data("lscpu", "Thread"))
-            except:
-                return _get_data("lscpu", "Core(s) per socket")
+            except ValueError:
+                return _CPU_GENERAL_ERROR_MESSAGE
             
         # return number of cpu physical core(s)
         elif core.lower() == 'p':
             try:
                 return int(_get_data("lscpu", "Core(s) per socket"))
             except ValueError:
-                return _get_data("lscpu", "Core(s) per socket")
+                return _CPU_GENERAL_ERROR_MESSAGE
         
         else:
-            return "core must be 'l' or 'p'"
+            return _CPU_CORES_ERROR_MESSAGE
         
     except AttributeError:
-        return "core must be 'l' or 'p'"
+        return _CPU_CORES_ERROR_MESSAGE
 
 
 def cpu_family():
@@ -126,7 +129,7 @@ def cpu_stepping():
     try:
         return int(_get_data("lscpu", "Stepping"))
     except ValueError:
-        return _get_data("lscpu", "Stepping")
+        return _CPU_GENERAL_ERROR_MESSAGE
 
        
 def cpu_speed(core_num: int):
@@ -150,7 +153,7 @@ def cpu_speed(core_num: int):
                 cpus.append(cpu)
 
     except FileNotFoundError:
-        return _GENERAL_ERROR_MESSAGE
+        return _CPU_GENERAL_ERROR_MESSAGE
 
     else:
         _CPU_SPEED_ERROR_MESSAGE = f"core number must be int() and between 0 and {len(cpus)-1}"
@@ -170,7 +173,7 @@ def cpu_temp(scale: str):
         celcius = float(_get_data("sensors", "Tctl").replace('+','').replace("°C",''))
 
     except ValueError: 
-        return _get_data("sensors", "Tctl")
+        return _CPU_GENERAL_ERROR_MESSAGE
     
     else:
         _CPU_TEMPERATURE_ERROR_MESSAGE = "temperature scale must be 'c', 'f', or 'k'"
@@ -195,7 +198,7 @@ def _get_level_cache(order: int):
         cpuid_data = subprocess.run("cpuid", capture_output=True, text=True)
 
     except FileNotFoundError:
-        return _GENERAL_ERROR_MESSAGE
+        return _CPU_GENERAL_ERROR_MESSAGE
     
     else:
         cpuid_data = cpuid_data.stdout.splitlines()
@@ -218,12 +221,12 @@ def _get_level_cache(order: int):
         try:    
             return int(cpuid_new_list[order])
         except IndexError:
-            return _GENERAL_ERROR_MESSAGE
+            return _CPU_GENERAL_ERROR_MESSAGE
 
 
 def cpu_l1c(cache_type: str):
     _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
-    
+
     try:
         if cache_type.lower() == 'd': # Level 1 data cache
             return _get_level_cache(0)
