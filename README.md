@@ -10,13 +10,13 @@ from sypeek import *
 
 # return cpu name and cpu temperature in celcius
 print(f"=====(CPU info)=====")
-print(f"name : {cpu.name()}")
-print(f"temp : {cpu.temp('c')} °C")
+print(f"name : {cpu.cpu_name()}")
+print(f"temp : {cpu.cpu_temp('c')} °C")
 
 # return total memory and used memory
 print("=====(Memo info)=====")
-print(f"total: {memory.total()}")
-print(f"used : {memory.used()}")
+print(f"total: {memory.mem_total()}")
+print(f"used : {memory.mem_used()}")
 ``` 
 output:
 ```
