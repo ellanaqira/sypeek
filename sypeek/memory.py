@@ -59,12 +59,12 @@ def mem_inactive():
     incative_memo = _Return_Data("Inactive")
     return incative_memo._get_memo_data()
 
-"""
-The (anon) means that this amount of memory
-is being used by a service or application.
-"""
 
 def mem_active_anon():
+    """
+    The (anon) means that this amount of memory
+    is being used by a service or application.
+    """
     # return active memory (anon)
     active_memo_anon = _Return_Data("Active(anon)")
     return active_memo_anon._get_memo_data()
@@ -74,12 +74,12 @@ def mem_inactive_anon():
     inactive_memo_anon = _Return_Data("Inactive(anon)")
     return inactive_memo_anon._get_memo_data()
 
-"""
-The (file) means that the amount
-of memory is being used by cache.
-"""
 
 def mem_active_file():
+    """
+    The (file) means that the amount
+    of memory is being used by cache.
+    """
     # return active memory (file)
     active_memo_file = _Return_Data("Active(file)")
     return active_memo_file._get_memo_data()
@@ -88,3 +88,28 @@ def mem_inactive_file():
     # return inactive memory (file)
     inactive_memo_file = _Return_Data("Inactive(file)")
     return inactive_memo_file._get_memo_data()
+
+
+
+# Buffers and Cache
+
+def mem_buffer():
+    """
+    Buffer is a part of memory which stores data temporarily
+    while that data is being forwarded from one location to
+    another in a computer. 
+    """
+    # return memory buffer
+    memo_buffer = _Return_Data("Buffers")
+    return memo_buffer._get_memo_data()
+
+
+def mem_cache():
+    """
+    Cache is a fast storage unit that is not too large in size
+    compared to other memory units and is used to store data
+    that has been accessed recently.
+    """
+    # return memory cache
+    memo_cache = _Return_Data("Cached")
+    return memo_cache._get_memo_data()
