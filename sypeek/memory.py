@@ -28,6 +28,7 @@ class _Return_Data:
             return _GENERAL_MEMO_ERROR_MESSAGE
 
 
+
 # General Memory ===============================================
 
 def mem_total():
@@ -91,7 +92,7 @@ def mem_inactive_file():
 
 
 
-# Buffers and Cache
+# Buffers and Cache ============================================
 
 def mem_buffer():
     """
@@ -113,3 +114,22 @@ def mem_cache():
     # return memory cache
     memo_cache = _Return_Data("Cached")
     return memo_cache._get_memo_data()
+
+
+
+# Swap Memory ==================================================
+
+def mem_swap_total():
+    # return the total amount of swap space available in the system
+    swap_memo_total = _Return_Data("SwapTotal")
+    return swap_memo_total._get_memo_data()
+
+def mem_swap_free():
+    # return the value of unused swap space
+    swap_memo_free = _Return_Data("SwapFree")
+    return swap_memo_free._get_memo_data()
+
+def mem_swap_cache():
+    # return the value of recently used swap memory
+    swap_memo_cache = _Return_Data("SwapCached")
+    return swap_memo_cache._get_memo_data()
