@@ -133,3 +133,23 @@ def mem_swap_cache():
     # return the value of recently used swap memory
     swap_memo_cache = _Return_Data("SwapCached")
     return swap_memo_cache._get_memo_data()
+
+
+
+# Writeback into the Disk ================================================
+
+def mem_writesback():
+    """
+    Write back is when the data is updated only in the cache and
+    updated into the memory at a later time. Data is updated in
+    the memory only when the cache line is ready to be replaced. 
+    """
+    # return value of memory that is being written back at the moment
+    writeback_memo = _Return_Data("Writeback")
+    return writeback_memo._get_memo_data()
+
+def mem_dirty():
+    # return value of memory that is currently waiting to be written back to disk after being modified (dirty).
+    dirty_bit_memo = _Return_Data("Dirty")
+    return dirty_bit_memo._get_memo_data()
+
