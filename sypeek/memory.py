@@ -136,7 +136,7 @@ def mem_swap_cache():
 
 
 
-# Writeback into the Disk ================================================
+# Writeback into the Disk ======================================
 
 def mem_writesback():
     """
@@ -153,3 +153,23 @@ def mem_dirty():
     dirty_bit_memo = _Return_Data("Dirty")
     return dirty_bit_memo._get_memo_data()
 
+
+
+# Shared Memory ================================================
+
+def mem_shared():
+    """
+    Tmpfs (temporary file system) tmpfs is a file system
+    which keeps all files in virtual memory. Everything
+    in tmpfs is temporary in the sense that no files will
+    be created on your hard drive. If you unmount a tmpfs
+    instance, everything stored therein is lost.
+    """
+    # return the amount used by shared memory and the tmpfs filesystem
+    shared_memo = _Return_Data("Shmem")
+    return shared_memo._get_memo_data()
+
+def mem_shared_hp():
+    # return the amount used by shared memory and the tmpfs filesystem with huge pages
+    shared_memo_huge_pages = _Return_Data("ShmemHugePages")
+    return shared_memo_huge_pages._get_memo_data()
