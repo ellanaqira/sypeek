@@ -173,3 +173,17 @@ def mem_shared_hp():
     # return the amount used by shared memory and the tmpfs filesystem with huge pages
     shared_memo_huge_pages = _Return_Data("ShmemHugePages")
     return shared_memo_huge_pages._get_memo_data()
+
+
+
+# Kernel Memory ================================================
+
+def mem_kreclaimable():
+    """
+    Kernel allocations that the kernel will attempt to reclaim
+    under memory pressure. Includes other direct allocations
+    with a shrinker
+    """
+    # return the value of kernel allocated memory, reclaimable under memory pressure
+    kernel_reclaimable_memo = _Return_Data("KReclaimable")
+    return kernel_reclaimable_memo._get_memo_data()
