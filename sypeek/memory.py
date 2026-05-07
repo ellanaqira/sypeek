@@ -187,3 +187,30 @@ def mem_kreclaimable():
     # return the value of kernel allocated memory, reclaimable under memory pressure
     kernel_reclaimable_memo = _Return_Data("KReclaimable")
     return kernel_reclaimable_memo._get_memo_data()
+
+def mem_slab():
+    """
+    A slab is a set of one or more contiguous pages of memory
+    set aside by the slab allocator for an individual cache.
+    This memory is further divided into equal segments the size
+    of the object type that the cache is managing.
+    """
+    # return total memory used by kernel slab caches
+    slab = _Return_Data("Slab")
+    return slab._get_memo_data()
+
+def mem_sreclaimable():
+    # return the amount of slab memory part that can be reclaimed under memory pressure
+    slab_reclaimable = _Return_Data("SReclaimable")
+    return slab_reclaimable._get_memo_data()
+
+def mem_sunreclaim():
+    # return the amount of slab memory part that cannot be reclaimed, even when the system is low on memory
+    slab_unreclaimable = _Return_Data("SUnreclaim")
+    return slab_unreclaimable._get_memo_data()
+
+def mem_kernel_stack():
+    # return the sum of all kernel stack memory
+    kernel_stack = _Return_Data("KernelStack")
+    return kernel_stack._get_memo_data()
+
