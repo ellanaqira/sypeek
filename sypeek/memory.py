@@ -1,6 +1,19 @@
 
 class MemoInfoError(Exception):
-    pass
+    """
+    Exception raised and displays an error message
+    when a problem occurs while trying to retrieve
+    memory information.
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+
 
 def _get_memo_datas(keyword: str, keyword_error: str):
     data_dict = {}
@@ -11,12 +24,13 @@ def _get_memo_datas(keyword: str, keyword_error: str):
                 data_dict[key] = value
                 
     except FileNotFoundError:
-        raise MemoInfoError(f"Sorry, something went wrong, couldn't get {keyword_error} information.")
+        raise MemoInfoError(f"Couldn't get {keyword_error} information")
     
     else:
         # return value in Kilobyte
         return int(data_dict[keyword])
    
+
 
 class _Return_Data:
     def __init__(self, keyword: str, keyword_error: str):
@@ -27,7 +41,7 @@ class _Return_Data:
         try:
             return _get_memo_datas(self.keyword, self.keyword_error)
         except KeyError:
-            raise MemoInfoError(f"Sorry, something went wrong, couldn't get {self.keyword_error} information.")
+            raise MemoInfoError(f"Couldn't get {self.keyword_error} information")
 
 
 
