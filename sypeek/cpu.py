@@ -1,7 +1,7 @@
 import subprocess
 
 
-_CPU_GENERAL_ERROR_MESSAGE = "something went wrong, couldn't get data from cpu"
+_CPU_GENERAL_ERROR_MESSAGE = "Sorry, something went wrong, couldn't get data from cpu"
 
 
 def _get_data(command:str, keyword:str):
