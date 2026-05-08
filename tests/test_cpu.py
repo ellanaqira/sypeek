@@ -1,4 +1,5 @@
 import pytest
+import pytest
 from sypeek import cpu
 
 
@@ -20,6 +21,15 @@ class _Return_Exception():
 def test_get_cpu_vendor():
     assert cpu.cpu_vendor() == "AMD"
 
+def test_cpu_vendor_not_found(mocker):
+    # test cpu_vendor fuction to return "not found message" when the cpu vendor cannot be found
+
+    mocked_name = "unknown_cpu"
+    cpu_vendor_mock = mocker.patch("sypeek.cpu.cpu_vendor")
+    cpu_vendor_mock.return_value = f"vendor name of '{mocked_name}' could not be found"
+
+    return cpu.cpu_vendor() == f"vendor name of '{mocked_name}' could not be found"
+    
 
 """
 test the cpu_vendor function to return an exception when arguments
