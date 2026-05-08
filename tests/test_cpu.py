@@ -10,7 +10,7 @@ class _Return_Exception():
 
     def _return_exception(self):
         with pytest.raises(cpu.CPUInfoError) as excinfo:
-            cpu._get_data(self.command, self.keyword)
+            cpu._get_data(self.command, self.keyword, self.keyword_error)
         assert str(excinfo.value) == f"Couldn't get cpu '{self.keyword_error}' information"
 
 
@@ -21,49 +21,36 @@ def test_get_cpu_vendor():
     assert cpu.cpu_vendor() == "AMD"
 
 
-def test_wrong_command_cpu_vendor():
-    """
-    test the cpu_vendor function to return an exception
-    when arguments in command parameters are problematic
+"""
+test the cpu_vendor function to return an exception when arguments
+in command and/or keyword parameters are problematic
 
-    below is the wrong_command variable which contains the wrong
-    command, which represents the conditions when a problem occurs
-    when the code contains problematic command is executed
-    """
+the function below contains wrong_command and/or wrong_keyword
+variable which contains the wrong command and/or keyword, which
+represents the conditions when a problem occurs when the code
+contains problematic command and/or keyword is executed
+"""
+
+def test_wrong_command_cpu_vendor():
     wrong_command = "wrong_lscpu"
 
-    _Return_Exception(wrong_command, "Vendor ID", "Vendor")
+    wrong_com_exc = _Return_Exception(wrong_command, "Vendor ID", "Vendor")
+    wrong_com_exc._return_exception()
 
 
 def test_wrong_keyword_cpu_vendor():
-    """
-    test the cpu_vendor function to return an exception
-    when arguments in keyword parameters are problematic
-
-    below is the wrong_keyword variable which contains the wrong
-    keyword, which represents the conditions when a problem occurs
-    when the code contains problematic keyword is executed
-    """
     wrong_keyword = "wrong_vendor"
     
-    _Return_Exception("lscpu", wrong_keyword, "Vendor")
+    wrong_keyw_exc = _Return_Exception("lscpu", wrong_keyword, "Vendor")
+    wrong_keyw_exc._return_exception()
 
 
 def test_wrong_command_and_keyword_cpu_vendor():
-    """
-    test the cpu_vendor function to return an exception
-    when arguments in command and keyword parameters are
-    problematic
-
-    below are the wrong_command and wrong_keyword variable which
-    contains the wrong command and keyword, which represents the
-    conditions when a problem occurs when the code contains
-    problematic command and keyword is executed
-    """
     wrong_command = "wrong_lscpu"
     wrong_keyword = "wrong_vendor"
     
-    _Return_Exception(wrong_command, wrong_keyword, "Vendor")
+    wrong_com_keyw_exc = _Return_Exception(wrong_command, wrong_keyword, "Vendor")
+    wrong_com_keyw_exc._return_exception()
 
 
 
@@ -71,6 +58,42 @@ def test_wrong_command_and_keyword_cpu_vendor():
 
 def test_get_cpu_vendorid():
     assert cpu.cpu_vendorid() == "AuthenticAMD"
+
+
+"""
+test the cpu_vendorid function to return an exception when arguments
+in command and/or keyword parameters are problematic
+
+the function below contains wrong_command and/or wrong_keyword
+variable which contains the wrong command and/or keyword, which
+represents the conditions when a problem occurs when the code
+contains problematic command and/or keyword is executed
+"""
+
+def test_wrong_command_cpu_vendorid():
+    wrong_command = "wrong_lscpu"
+    
+    wrong_com_exc = _Return_Exception("lscpu", wrong_command, "Vendor ID")
+    wrong_com_exc._return_exception()
+
+
+def test_wrong_keyword_cpu_vendorid():
+    wrong_keyword = "wrong_vendor"
+    
+    wrong_keyw_exc = _Return_Exception("lscpu", wrong_keyword, "Vendor ID")
+    wrong_keyw_exc._return_exception()
+
+
+def test_wrong_command_and_keyword_cpu_vendorid():
+    wrong_command = "wrong_lscpu"
+    wrong_keyword = "wrong_vendor"
+    
+    wrong_com_keyw_exc = _Return_Exception(wrong_command, wrong_keyword, "Vendor ID")
+    wrong_com_keyw_exc._return_exception()
+
+
+
+# Get CPU Name Test =======================================
 
 def test_get_cpu_name():
     assert cpu.cpu_name() == "AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx"
