@@ -2,40 +2,72 @@ import pytest
 from sypeek import cpu
 
 
+class _Return_Exception():
+    def __init__(self, command: str, keyword: str, keyword_error: str):
+        self.command = command
+        self.keyword = keyword
+        self.keyword_error = keyword_error
+
+    def _return_exception(self):
+        with pytest.raises(cpu.CPUInfoError) as excinfo:
+            cpu._get_data(self.command, self.keyword)
+        assert str(excinfo.value) == f"Couldn't get cpu '{self.keyword_error}' information"
+
+
+
 # Get CPU Vendor Test ==========================================
 
 def test_get_cpu_vendor():
     assert cpu.cpu_vendor() == "AMD"
 
 
-def test_wrong_command_get_cpu_vendor():
+def test_wrong_command_cpu_vendor():
     """
-    test cpu_vendor function to return execption
-    when parameter command got a argument
+    test the cpu_vendor function to return an exception
+    when arguments in command parameters are problematic
 
-    below is the wrong_command variable which contains the wrong command
+    below is the wrong_command variable which contains the wrong
+    command, which represents the conditions when a problem occurs
+    when the code contains problematic command is executed
     """
     wrong_command = "wrong_lscpu"
 
-    with pytest.raises(cpu.CPUInfoError) as excinfo:
-        cpu._get_data(wrong_command, "Vendor ID", "Vendor")
-    assert str(excinfo.value) == "Couldn't get cpu 'Vendor' information"
+    _Return_Exception(wrong_command, "Vendor ID", "Vendor")
 
 
-def test_wrong_keyword_get_cpu_vendor():
+def test_wrong_keyword_cpu_vendor():
     """
-    test cpu_vendor function to return execption
-    when parameter keyword got a argument
+    test the cpu_vendor function to return an exception
+    when arguments in keyword parameters are problematic
 
-    below is the wrong_keyword variable which contains the wrong keyword
+    below is the wrong_keyword variable which contains the wrong
+    keyword, which represents the conditions when a problem occurs
+    when the code contains problematic keyword is executed
     """
     wrong_keyword = "wrong_vendor"
     
-    with pytest.raises(cpu.CPUInfoError) as excinfo:
-        cpu._get_data("lscpu", wrong_keyword, "Vendor")
-    assert str(excinfo.value) == "Couldn't get cpu 'Vendor' information"
+    _Return_Exception("lscpu", wrong_keyword, "Vendor")
 
 
+def test_wrong_command_and_keyword_cpu_vendor():
+    """
+    test the cpu_vendor function to return an exception
+    when arguments in command and keyword parameters are
+    problematic
+
+    below are the wrong_command and wrong_keyword variable which
+    contains the wrong command and keyword, which represents the
+    conditions when a problem occurs when the code contains
+    problematic command and keyword is executed
+    """
+    wrong_command = "wrong_lscpu"
+    wrong_keyword = "wrong_vendor"
+    
+    _Return_Exception(wrong_command, wrong_keyword, "Vendor")
+
+
+
+# Get CPU Vendor ID Test =======================================
 
 def test_get_cpu_vendorid():
     assert cpu.cpu_vendorid() == "AuthenticAMD"
