@@ -14,6 +14,10 @@ class MemoInfoError(Exception):
         super().__init__(self.message)
 
 
+def _return_memo_error(keyword_error: str):
+    # raised MemoInfoError
+    raise MemoInfoError(f"Couldn't get {keyword_error} information")
+
 
 def _get_memo_datas(keyword: str, keyword_error: str):
     data_dict = {}
@@ -24,7 +28,7 @@ def _get_memo_datas(keyword: str, keyword_error: str):
                 data_dict[key] = value
                 
     except FileNotFoundError:
-        raise MemoInfoError(f"Couldn't get {keyword_error} information")
+        _return_memo_error(keyword_error)
     
     else:
         # return value in Kilobyte
@@ -41,7 +45,7 @@ class _Return_Data:
         try:
             return _get_memo_datas(self.keyword, self.keyword_error)
         except KeyError:
-            raise MemoInfoError(f"Couldn't get {self.keyword_error} information")
+            _return_memo_error(self.keyword_error)
 
 
 
