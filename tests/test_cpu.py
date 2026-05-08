@@ -25,10 +25,8 @@ def test_get_cpu_vendor():
 test the cpu_vendor function to return an exception when arguments
 in command and/or keyword parameters are problematic
 
-the function below contains wrong_command and/or wrong_keyword
-variable which contains the wrong command and/or keyword, which
-represents the conditions when a problem occurs when the code
-contains problematic command and/or keyword is executed
+the function below is represents the conditions when a problem occurs
+when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_vendor():
@@ -64,16 +62,14 @@ def test_get_cpu_vendorid():
 test the cpu_vendorid function to return an exception when arguments
 in command and/or keyword parameters are problematic
 
-the function below contains wrong_command and/or wrong_keyword
-variable which contains the wrong command and/or keyword, which
-represents the conditions when a problem occurs when the code
-contains problematic command and/or keyword is executed
+the function below is represents the conditions when a problem occurs
+when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_vendorid():
     wrong_command = "wrong_lscpu"
     
-    wrong_com_exc = _Return_Exception("lscpu", wrong_command, "Vendor ID")
+    wrong_com_exc = _Return_Exception(wrong_command, "Vendor ID", "Vendor ID")
     wrong_com_exc._return_exception()
 
 
@@ -93,10 +89,46 @@ def test_wrong_command_and_keyword_cpu_vendorid():
 
 
 
-# Get CPU Name Test =======================================
+# Get CPU Name Test ============================================
 
 def test_get_cpu_name():
     assert cpu.cpu_name() == "AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx"
+
+
+"""
+test the cpu_name function to return an exception when arguments
+in command and/or keyword parameters are problematic
+
+the function below is represents the conditions when a problem occurs
+when the code contains problematic command and/or keyword is executed
+"""
+
+
+def test_wrong_command_cpu_name():
+    wrong_command = "wrong_lscpu"
+    
+    wrong_com_exc = _Return_Exception(wrong_command, "Model name", "Model Name")
+    wrong_com_exc._return_exception()
+
+
+def test_wrong_keyword_cpu_name():
+    wrong_keyw = "wrong_model_name"
+    
+    wrong_com_exc = _Return_Exception("lscpu", wrong_keyw, "Model Name")
+    wrong_com_exc._return_exception()
+
+
+def test_wrong_command_keyword_cpu_name():
+    wrong_command = "wrong_lscpu"
+    wrong_keyw = "wrong_model_name"
+    
+    wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Model Name")
+    wrong_com_exc._return_exception()
+
+
+
+# Get CPU Thread Test ==========================================
+
 
 def test_get_cpu_threads():
     assert cpu.cpu_threads() == 2
