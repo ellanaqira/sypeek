@@ -170,7 +170,7 @@ def cpu_speed(core_num: int):
             if core_num < 0 or core_num >= len(cpus):
                 return _CPU_SPEED_ERROR_MESSAGE
         
-            if cpus[core_num].get("cppu MHz"):
+            if cpus[core_num].get("cpu MHz"):
                 return float(cpus[core_num].get("cpu MHz"))
             else:
                 _return_cpu_error("Speed")

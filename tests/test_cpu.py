@@ -2,8 +2,40 @@ import pytest
 from sypeek import cpu
 
 
+# Get CPU Vendor Test ==========================================
+
 def test_get_cpu_vendor():
     assert cpu.cpu_vendor() == "AMD"
+
+
+def test_wrong_command_get_cpu_vendor():
+    """
+    test cpu_vendor function to return execption
+    when parameter command got a argument
+
+    below is the wrong_command variable which contains the wrong command
+    """
+    wrong_command = "wrong_lscpu"
+
+    with pytest.raises(cpu.CPUInfoError) as excinfo:
+        cpu._get_data(wrong_command, "Vendor ID", "Vendor")
+    assert str(excinfo.value) == "Couldn't get cpu 'Vendor' information"
+
+
+def test_wrong_keyword_get_cpu_vendor():
+    """
+    test cpu_vendor function to return execption
+    when parameter keyword got a argument
+
+    below is the wrong_keyword variable which contains the wrong keyword
+    """
+    wrong_keyword = "wrong_vendor"
+    
+    with pytest.raises(cpu.CPUInfoError) as excinfo:
+        cpu._get_data("lscpu", wrong_keyword, "Vendor")
+    assert str(excinfo.value) == "Couldn't get cpu 'Vendor' information"
+
+
 
 def test_get_cpu_vendorid():
     assert cpu.cpu_vendorid() == "AuthenticAMD"
