@@ -355,7 +355,7 @@ def test_wrong_command_keyword_cpu_stepping():
 
 
 
-# Get CPU Model Speed ==========================================
+# Get CPU Speed ================================================
 
 def test_get_cpu_speed():
     assert cpu.cpu_speed(0)
@@ -367,12 +367,48 @@ def test_get_cpu_speed():
     assert cpu.cpu_speed(6)
     assert cpu.cpu_speed(7)
 
-def test_get_cpu_speed_error():
-    assert cpu.cpu_speed(8) == "core number must be int() and between 0 and 7"
-    assert cpu.cpu_speed(3.0) == "core number must be int() and between 0 and 7"
-    assert cpu.cpu_speed('3') == "core number must be int() and between 0 and 7"
-    assert cpu.cpu_speed(True) == "core number must be int() and between 0 and 7"
 
+def test_get_cpu_speed_error():
+    logical_cpu: str = cpu.cpu_cores('l') - 1
+
+    assert cpu.cpu_speed(8) == f"core number must be int() and between 0 and {logical_cpu}"
+    assert cpu.cpu_speed(3.0) == f"core number must be int() and between 0 and {logical_cpu}"
+    assert cpu.cpu_speed('3') == f"core number must be int() and between 0 and {logical_cpu}"
+    assert cpu.cpu_speed(True) == f"core number must be int() and between 0 and {logical_cpu}"
+
+"""
+test the cpu_speed function to return an exception when arguments
+in command and/or keyword parameters are problematic
+
+the function below is represents the conditions when a problem occurs
+when the code contains unexist file path or problematic keyword is executed
+"""
+
+def test_mock_filepath_cpu_speed(mocker):
+    mocked_file_path: str = "/proc/notcpuinfo"
+
+    try:
+        open(mocked_file_path)
+    except FileNotFoundError:
+        cpu_speed_mock = mocker.patch("sypeek.cpu.cpu_speed")
+        cpu_speed_mock.return_value = "Couldn't get cpu 'Speed' information"
+
+        assert cpu.cpu_speed(0) == "Couldn't get cpu 'Speed' information"
+
+
+def test_mock_keyword_cpu_speed(mocker):
+    real_keyword: str = "cpu MHz"
+    mocked_keyword: str = "not cpu MHz"
+
+    if mocked_keyword != real_keyword:
+        cpu_speed_mock = mocker.patch("sypeek.cpu.cpu_speed")
+        cpu_speed_mock.return_value = "Couldn't get cpu 'Speed' information"
+
+        assert cpu.cpu_speed(0) == "Couldn't get cpu 'Speed' information"
+
+
+
+# Get CPU Temperature ==========================================
 
 def test_get_cpu_temperature():
     assert cpu.cpu_temp('c')
