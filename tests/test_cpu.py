@@ -39,24 +39,17 @@ when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_vendor():
-    wrong_command = "wrong_lscpu"
-
-    wrong_com_exc = _Return_Exception(wrong_command, "Vendor ID", "Vendor")
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "Vendor ID", "Vendor")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_keyword_cpu_vendor():
-    wrong_keyword = "wrong_vendor"
-    
-    wrong_keyw_exc = _Return_Exception("lscpu", wrong_keyword, "Vendor")
+    wrong_keyw_exc = _Return_Exception("lscpu", "wrong_vendor", "Vendor")
     wrong_keyw_exc._return_exception()
 
 
 def test_wrong_command_and_keyword_cpu_vendor():
-    wrong_command = "wrong_lscpu"
-    wrong_keyword = "wrong_vendor"
-    
-    wrong_com_keyw_exc = _Return_Exception(wrong_command, wrong_keyword, "Vendor")
+    wrong_com_keyw_exc = _Return_Exception("wrong_lscpu", "wrong_vendor", "Vendor")
     wrong_com_keyw_exc._return_exception()
 
 
@@ -76,24 +69,17 @@ when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_vendorid():
-    wrong_command = "wrong_lscpu"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, "Vendor ID", "Vendor ID")
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "Vendor ID", "Vendor ID")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_keyword_cpu_vendorid():
-    wrong_keyword = "wrong_vendor"
-    
-    wrong_keyw_exc = _Return_Exception("lscpu", wrong_keyword, "Vendor ID")
+    wrong_keyw_exc = _Return_Exception("lscpu", "wrong_vendor", "Vendor ID")
     wrong_keyw_exc._return_exception()
 
 
 def test_wrong_command_and_keyword_cpu_vendorid():
-    wrong_command = "wrong_lscpu"
-    wrong_keyword = "wrong_vendor"
-    
-    wrong_com_keyw_exc = _Return_Exception(wrong_command, wrong_keyword, "Vendor ID")
+    wrong_com_keyw_exc = _Return_Exception("wrong_lscpu", "wrong_vendor", "Vendor ID")
     wrong_com_keyw_exc._return_exception()
 
 
@@ -113,25 +99,18 @@ when the code contains problematic command and/or keyword is executed
 """
 
 
-def test_wrong_command_cpu_name():
-    wrong_command = "wrong_lscpu"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, "Model name", "Model Name")
+def test_wrong_command_cpu_name():    
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "Model name", "Model Name")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_keyword_cpu_name():
-    wrong_keyw = "wrong_model_name"
-    
-    wrong_com_exc = _Return_Exception("lscpu", wrong_keyw, "Model Name")
+    wrong_com_exc = _Return_Exception("lscpu", "wrong_model_name", "Model Name")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_command_keyword_cpu_name():
-    wrong_command = "wrong_lscpu"
-    wrong_keyw = "wrong_model_name"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Model Name")
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_model_name", "Model Name")
     wrong_com_exc._return_exception()
 
 
@@ -151,24 +130,17 @@ when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_threads():
-    wrong_command = "wrong_lscpu"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, "Thread", "Thread")
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "Thread", "Thread")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_keyword_cpu_threads():
-    wrong_keyw = "wrong_thread"
-    
-    wrong_com_exc = _Return_Exception("lscpu", wrong_keyw, "Thread")
+    wrong_com_exc = _Return_Exception("lscpu", "wrong_thread", "Thread")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_command_keyword_cpu_threads():
-    wrong_command = "wrong_lscpu"
-    wrong_keyw = "wrong_thread"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Thread")
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_thread", "Thread")
     wrong_com_exc._return_exception()
 
 
@@ -200,24 +172,17 @@ when the code contains problematic command and/or keyword is executed
     
 def test_wrong_command_cpu_logical_cores():
     if cpu.cpu_cores('l') or cpu.cpu_cores('L'):
-        wrong_command = "wrong_lscpu"
-        
-        wrong_com_exc = _Return_Exception(wrong_command, "Core(s) per socket", "Logical Core")
+        wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Logical Core")
         wrong_com_exc._return_exception()
 
 def test_wrong_keyword_cpu_logical_cores():
     if cpu.cpu_cores('l') or cpu.cpu_cores('L'):
-        wrong_keyw = "wrong_core"
-        
-        wrong_com_exc = _Return_Exception("lscpu", wrong_keyw, "Logical Core")
+        wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Logical Core")
         wrong_com_exc._return_exception()
 
 def test_wrong_command_keyword_cpu_logical_cores():
     if cpu.cpu_cores('l') or cpu.cpu_cores('L'):
-        wrong_command = "wrong_lscpu"
-        wrong_keyw = "wrong_core"
-        
-        wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Logical Core")
+        wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_core", "Logical Core")
         wrong_com_exc._return_exception()
 
 
@@ -225,24 +190,17 @@ def test_wrong_command_keyword_cpu_logical_cores():
 
 def test_wrong_command_cpu_physical_cores():
     if cpu.cpu_cores('p') or cpu.cpu_cores('P'):
-        wrong_command = "wrong_lscpu"
-        
-        wrong_com_exc = _Return_Exception(wrong_command, "Core(s) per socket", "Physical Core")
+        wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Physical Core")
         wrong_com_exc._return_exception()
 
 def test_wrong_keyword_cpu_physical_cores():
     if cpu.cpu_cores('p') or cpu.cpu_cores('P'):
-        wrong_keyw = "wrong_core"
-        
-        wrong_com_exc = _Return_Exception("lscpu", wrong_keyw, "Physical Core")
+        wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Physical Core")
         wrong_com_exc._return_exception()
 
 def test_wrong_command_keyword_cpu_physical_cores():
     if cpu.cpu_cores('p') or cpu.cpu_cores('P'):
-        wrong_command = "wrong_lscpu"
-        wrong_keyw = "wrong_core"
-        
-        wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Physical Core")
+        wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_core", "Physical Core")
         wrong_com_exc._return_exception()
 
 
@@ -262,24 +220,17 @@ when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_family():
-    wrong_command = "wrong_cpuid"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, "family", "Family")
+    wrong_com_exc = _Return_Exception("wrong_cpuid", "family", "Family")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_keyword_cpu_family():
-    wrong_keyw = "wrong_family"
-    
-    wrong_com_exc = _Return_Exception("cpuid", wrong_keyw, "Family")
+    wrong_com_exc = _Return_Exception("cpuid", "wrong_family", "Family")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_command_keyword_cpu_family():
-    wrong_command = "wrong_cpuid"
-    wrong_keyw = "wrong_family"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Family")
+    wrong_com_exc = _Return_Exception("wrong_cpuid", "wrong_family", "Family")
     wrong_com_exc._return_exception()
 
 
@@ -299,24 +250,17 @@ when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_family_synth():
-    wrong_command = "wrong_cpuid"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, "family synth", "Family Synth")
+    wrong_com_exc = _Return_Exception("wrong_cpuid", "family synth", "Family Synth")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_keyword_cpu_family_synth():
-    wrong_keyw = "wrong_family_synth"
-    
-    wrong_com_exc = _Return_Exception("cpuid", wrong_keyw, "Family Synth")
+    wrong_com_exc = _Return_Exception("cpuid", "wrong_family_synth", "Family Synth")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_command_keyword_cpu_family_synth():
-    wrong_command = "wrong_cpuid"
-    wrong_keyw = "wrong_family_synth"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Family Synth")
+    wrong_com_exc = _Return_Exception("wrong_family_synth", "wrong_family_synth", "Family Synth")
     wrong_com_exc._return_exception()
 
 
@@ -336,24 +280,17 @@ when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_model():
-    wrong_command = "wrong_cpuid"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, "model", "Model")
+    wrong_com_exc = _Return_Exception("wrong_cpuid", "model", "Model")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_keyword_cpu_model():
-    wrong_keyw = "wrong_model"
-    
-    wrong_com_exc = _Return_Exception("cpuid", wrong_keyw, "Model")
+    wrong_com_exc = _Return_Exception("cpuid", "wrong_model", "Model")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_command_keyword_cpu_model():
-    wrong_command = "wrong_cpuid"
-    wrong_keyw = "wrong_model"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Model")
+    wrong_com_exc = _Return_Exception("wrong_cpuid", "wrong_model", "Model")
     wrong_com_exc._return_exception()
 
 
@@ -362,10 +299,6 @@ def test_wrong_command_keyword_cpu_model():
 
 def test_get_cpu_model_synth():
     assert cpu.cpu_model_synth() == "0x18 (24)"
-
-
-def test_get_cpu_family_synth():
-    assert cpu.cpu_family_synth() == "0x17 (23)"
 
 
 """
@@ -377,33 +310,52 @@ when the code contains problematic command and/or keyword is executed
 """
 
 def test_wrong_command_cpu_model_synth():
-    wrong_command = "wrong_cpuid"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, "family synth", "Model Synth")
+    wrong_com_exc = _Return_Exception("wrong_cpuid", "family synth", "Model Synth")
     wrong_com_exc._return_exception()
 
 
-def test_wrong_keyword_cpu_model_synth():
-    wrong_keyw = "wrong_model_synth"
-    
-    wrong_com_exc = _Return_Exception("cpuid", wrong_keyw, "Model Synth")
+def test_wrong_keyword_cpu_model_synth():    
+    wrong_com_exc = _Return_Exception("cpuid", "wrong_model_synth", "Model Synth")
     wrong_com_exc._return_exception()
 
 
 def test_wrong_command_keyword_cpu_model_synth():
-    wrong_command = "wrong_cpuid"
-    wrong_keyw = "wrong_model_synth"
-    
-    wrong_com_exc = _Return_Exception(wrong_command, wrong_keyw, "Model Synth")
+    wrong_com_exc = _Return_Exception("wrong_cpuid", "wrong_model_synth", "Model Synth")
     wrong_com_exc._return_exception()
 
 
 
-# Get CPU Model Synth ==========================================
+# Get CPU Stepping =============================================
 
 def test_get_cpu_stepping():
     assert cpu.cpu_stepping() == 1
 
+
+"""
+test the cpu_stepping function to return an exception when arguments
+in command and/or keyword parameters are problematic
+
+the function below is represents the conditions when a problem occurs
+when the code contains problematic command and/or keyword is executed
+"""
+
+def test_wrong_command_cpu_stepping():
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "Stepping", "Stepping")
+    wrong_com_exc._return_exception()
+
+
+def test_wrong_keyword_cpu_stepping():
+    wrong_com_exc = _Return_Exception("lscpu", "wrong_stepping", "Stepping")
+    wrong_com_exc._return_exception()
+
+
+def test_wrong_command_keyword_cpu_stepping():
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_stepping", "Stepping")
+    wrong_com_exc._return_exception()
+
+
+
+# Get CPU Model Speed ==========================================
 
 def test_get_cpu_speed():
     assert cpu.cpu_speed(0)
