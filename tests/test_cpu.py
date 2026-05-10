@@ -171,37 +171,31 @@ when the code contains problematic command and/or keyword is executed
 # Logical cores
     
 def test_wrong_command_cpu_logical_cores():
-    if cpu.cpu_cores('l') or cpu.cpu_cores('L'):
-        wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Logical Core")
-        wrong_com_exc._return_exception()
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Logical Core")
+    wrong_com_exc._return_exception()
 
 def test_wrong_keyword_cpu_logical_cores():
-    if cpu.cpu_cores('l') or cpu.cpu_cores('L'):
-        wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Logical Core")
-        wrong_com_exc._return_exception()
+    wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Logical Core")
+    wrong_com_exc._return_exception()
 
 def test_wrong_command_keyword_cpu_logical_cores():
-    if cpu.cpu_cores('l') or cpu.cpu_cores('L'):
-        wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_core", "Logical Core")
-        wrong_com_exc._return_exception()
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_core", "Logical Core")
+    wrong_com_exc._return_exception()
 
 
 # Physical Core
 
 def test_wrong_command_cpu_physical_cores():
-    if cpu.cpu_cores('p') or cpu.cpu_cores('P'):
-        wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Physical Core")
-        wrong_com_exc._return_exception()
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Physical Core")
+    wrong_com_exc._return_exception()
 
 def test_wrong_keyword_cpu_physical_cores():
-    if cpu.cpu_cores('p') or cpu.cpu_cores('P'):
-        wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Physical Core")
-        wrong_com_exc._return_exception()
+    wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Physical Core")
+    wrong_com_exc._return_exception()
 
 def test_wrong_command_keyword_cpu_physical_cores():
-    if cpu.cpu_cores('p') or cpu.cpu_cores('P'):
-        wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_core", "Physical Core")
-        wrong_com_exc._return_exception()
+    wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_core", "Physical Core")
+    wrong_com_exc._return_exception()
 
 
 
@@ -385,26 +379,17 @@ when the code contains unexist file path or problematic keyword is executed
 """
 
 def test_mock_filepath_cpu_speed(mocker):
-    mocked_file_path: str = "/proc/notcpuinfo"
+    cpu_speed_mock = mocker.patch("sypeek.cpu.cpu_speed")
+    cpu_speed_mock.return_value = "Couldn't get cpu 'Speed' information"
 
-    try:
-        open(mocked_file_path)
-    except FileNotFoundError:
-        cpu_speed_mock = mocker.patch("sypeek.cpu.cpu_speed")
-        cpu_speed_mock.return_value = "Couldn't get cpu 'Speed' information"
-
-        assert cpu.cpu_speed(0) == "Couldn't get cpu 'Speed' information"
+    assert cpu.cpu_speed(0) == "Couldn't get cpu 'Speed' information"
 
 
 def test_mock_keyword_cpu_speed(mocker):
-    real_keyword: str = "cpu MHz"
-    mocked_keyword: str = "not cpu MHz"
+    cpu_speed_mock = mocker.patch("sypeek.cpu.cpu_speed")
+    cpu_speed_mock.return_value = "Couldn't get cpu 'Speed' information"
 
-    if mocked_keyword != real_keyword:
-        cpu_speed_mock = mocker.patch("sypeek.cpu.cpu_speed")
-        cpu_speed_mock.return_value = "Couldn't get cpu 'Speed' information"
-
-        assert cpu.cpu_speed(0) == "Couldn't get cpu 'Speed' information"
+    assert cpu.cpu_speed(0) == "Couldn't get cpu 'Speed' information"
 
 
 
@@ -449,6 +434,19 @@ def test_wrong_command_keyword_cpu_temperature():
 
 
 
+# mock cpu._get_level_cache function
+
+class _Mock_Cache_Level:
+    def __init__(self, keyword_error: str, function_name):
+        self.keyw_error = keyword_error
+        self.func_name = function_name
+
+    def _mocked_cache_level(self, mocker_plugin):
+        mocker_plugin.path("sypeek.cpu._get_level_cache", return_value=f"Couldn't get cpu '{self.keyw_error}' information")
+        assert self.func_name == f"Couldn't get cpu '{self.keyw_error}' information"
+
+
+
 # Get CPU Cache Level 1 ========================================
 
 def test_cpu_cache_level1():
@@ -464,11 +462,24 @@ def test_cpu_cache_level_l1_error():
     assert cpu.cpu_l1c(True) == "cache type must be 'd' or 'i'"
 
 
+def mock_cpu_cache_l1_data(mocker):
+    mocked_l1c_d = _Mock_Cache_Level("Data Cache Level 1", cpu.cpu_l1c('d'))
+    mocked_l1c_d._mocked_cache_level(mocker)
+
+def mock_cpu_cache_l1_instruction(mocker):
+    mocked_l1c_i = _Mock_Cache_Level("Instruction Cache Level 1", cpu.cpu_l1c('i'))
+    mocked_l1c_i._mocked_cache_level(mocker)
+
+
 
 # Get CPU Cache Level 2 ========================================
 
 def test_cpu_cache_level2():
     assert cpu.cpu_l2c() == 524288
+
+def mock_cpu_cache_level2(mocker):
+    mocked_l2 = _Mock_Cache_Level("Cache Level 2", cpu.cpu_l2c())
+    mocked_l2._mocked_cache_level(mocker)
 
 
 
@@ -476,3 +487,7 @@ def test_cpu_cache_level2():
 
 def test_cpu_cache_level3():
     assert cpu.cpu_l3c() == 4194304
+
+def mock_cpu_cache_level2(mocker):
+    mocked_l3 = _Mock_Cache_Level("Cache Level 3", cpu.cpu_l3c())
+    mocked_l3._mocked_cache_level(mocker)
