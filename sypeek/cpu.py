@@ -232,9 +232,9 @@ def cpu_l1c(cache_type: str):
 
     try:
         if cache_type.lower() == 'd': # Level 1 data cache
-            return _get_level_cache(0, "Data Cache Level 1 ")
+            return _get_level_cache(0, "Data Cache Level 1")
         elif cache_type.lower() == 'i': # Level 1 instruction cache
-            return _get_level_cache(1, "Instruction Cache Level 1 ")
+            return _get_level_cache(1, "Instruction Cache Level 1")
         else:
             return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
         

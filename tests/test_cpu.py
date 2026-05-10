@@ -377,8 +377,8 @@ def test_get_cpu_speed_error():
     assert cpu.cpu_speed(True) == f"core number must be int() and between 0 and {logical_cpu}"
 
 """
-test the cpu_speed function to return an exception when arguments
-in command and/or keyword parameters are problematic
+test the cpu_speed function to return an exception when
+the code contains unexist file path or problematic keyword
 
 the function below is represents the conditions when a problem occurs
 when the code contains unexist file path or problematic keyword is executed
@@ -425,6 +425,32 @@ def test_get_cpu_temperature_error():
     assert cpu.cpu_temp(True) == "temperature scale must be 'c', 'f', or 'k'"
 
 
+"""
+test the cpu temperature function to return an exception when arguments
+in command and/or keyword parameters are problematic
+
+the function below is represents the conditions when a problem occurs
+when the code contains problematic command and/or keyword is executed
+"""
+
+def test_wrong_command_cpu_temperature():
+    wrong_com_exc = _Return_Exception("wrong_sensors", "Tctl", "Temperature")
+    wrong_com_exc._return_exception()
+
+
+def test_wrong_keyword_cpu_temperature():
+    wrong_com_exc = _Return_Exception("sensors", "wrong_Tctl", "Temperature")
+    wrong_com_exc._return_exception()
+
+
+def test_wrong_command_keyword_cpu_temperature():
+    wrong_com_exc = _Return_Exception("wrong_sensors", "wrong_Tctl", "Temperature")
+    wrong_com_exc._return_exception()
+
+
+
+# Get CPU Cache Level 1 ========================================
+
 def test_cpu_cache_level1():
     assert cpu.cpu_l1c('d') == 32768
     assert cpu.cpu_l1c('D') == 32768
@@ -438,8 +464,15 @@ def test_cpu_cache_level_l1_error():
     assert cpu.cpu_l1c(True) == "cache type must be 'd' or 'i'"
 
 
+
+# Get CPU Cache Level 2 ========================================
+
 def test_cpu_cache_level2():
     assert cpu.cpu_l2c() == 524288
+
+
+
+# Get CPU Cache Level 3 ========================================
 
 def test_cpu_cache_level3():
     assert cpu.cpu_l3c() == 4194304
