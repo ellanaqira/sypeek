@@ -16,10 +16,10 @@ class MemoInfoError(Exception):
 
 def _return_memo_error(keyword_error: str):
     # raised MemoInfoError
-    raise MemoInfoError(f"Couldn't get {keyword_error} information")
+    raise MemoInfoError(f"Couldn't get '{keyword_error}' information")
 
 
-def _get_memo_datas(keyword: str, keyword_error: str):
+def _get_memo_data_meminfo(keyword: str, keyword_error: str):
     data_dict = {}
     try:
         with open("/proc/meminfo") as f:
@@ -43,7 +43,7 @@ class _Return_Data:
     
     def _get_memo_data(self):
         try:
-            return _get_memo_datas(self.keyword, self.keyword_error)
+            return _get_memo_data_meminfo(self.keyword, self.keyword_error)
         except KeyError:
             _return_memo_error(self.keyword_error)
 
@@ -53,17 +53,17 @@ class _Return_Data:
 
 def mem_total():
     # return total memory
-    total_memo = _Return_Data("MemTotal", "'Total Memory'")
+    total_memo = _Return_Data("MemTotal", "Total Memory")
     return total_memo._get_memo_data()
 
 def mem_free():
     # return free memory
-    free_memo = _Return_Data("MemFree", "'Free Memory'")
+    free_memo = _Return_Data("MemFree", "Free Memory")
     return free_memo._get_memo_data()
 
 def mem_available():
     # return available memory
-    available_memo = _Return_Data("MemAvailable", "'Available'")
+    available_memo = _Return_Data("MemAvailable", "Available Memory")
     return available_memo._get_memo_data()
 
 
@@ -72,12 +72,12 @@ def mem_available():
 
 def mem_active():
     # return active memory recently
-    active_memo = _Return_Data("Active", "'Active Memory'")
+    active_memo = _Return_Data("Active", "Active Memory")
     return active_memo._get_memo_data()
 
 def mem_inactive():
     # return inactive memory
-    incative_memo = _Return_Data("Inactive", "'Inactive Memory'")
+    incative_memo = _Return_Data("Inactive", "Inactive Memory")
     return incative_memo._get_memo_data()
 
 
@@ -87,12 +87,12 @@ def mem_active_anon():
     is being used by a service or application.
     """
     # return active memory (anon)
-    active_memo_anon = _Return_Data("Active(anon)", "'Active Memory (anon)'")
+    active_memo_anon = _Return_Data("Active(anon)", "Active Memory (anon)")
     return active_memo_anon._get_memo_data()
 
 def mem_inactive_anon():
     # return active memory (anon)
-    inactive_memo_anon = _Return_Data("Inactive(anon)", "'Inactive Memory (anon)'")
+    inactive_memo_anon = _Return_Data("Inactive(anon)", "Inactive Memory (anon)")
     return inactive_memo_anon._get_memo_data()
 
 
@@ -102,12 +102,12 @@ def mem_active_file():
     of memory is being used by cache.
     """
     # return active memory (file)
-    active_memo_file = _Return_Data("Active(file)", "'Active Memory (file)'")
+    active_memo_file = _Return_Data("Active(file)", "Active Memory (file)")
     return active_memo_file._get_memo_data()
 
 def mem_inactive_file():
     # return inactive memory (file)
-    inactive_memo_file = _Return_Data("Inactive(file)", "'Inactive Memory (file)'")
+    inactive_memo_file = _Return_Data("Inactive(file)", "Inactive Memory (file)")
     return inactive_memo_file._get_memo_data()
 
 
@@ -121,7 +121,7 @@ def mem_buffer():
     another in a computer. 
     """
     # return memory buffer
-    memo_buffer = _Return_Data("Buffers", "'Memory Buffer'")
+    memo_buffer = _Return_Data("Buffers", "Memory Buffer")
     return memo_buffer._get_memo_data()
 
 
@@ -132,7 +132,7 @@ def mem_cache():
     that has been accessed recently.
     """
     # return memory cache
-    memo_cache = _Return_Data("Cached", "'Memory Cache'")
+    memo_cache = _Return_Data("Cached", "Memory Cache")
     return memo_cache._get_memo_data()
 
 
@@ -141,17 +141,17 @@ def mem_cache():
 
 def mem_swap_total():
     # return the total amount of swap space available in the system
-    swap_memo_total = _Return_Data("SwapTotal", "'Total Swap Space'")
+    swap_memo_total = _Return_Data("SwapTotal", "Total Swap Space")
     return swap_memo_total._get_memo_data()
 
 def mem_swap_free():
     # return the value of unused swap space
-    swap_memo_free = _Return_Data("SwapFree", "'Free Swap Space'")
+    swap_memo_free = _Return_Data("SwapFree", "Free Swap Space'")
     return swap_memo_free._get_memo_data()
 
 def mem_swap_cache():
     # return the value of recently used swap memory
-    swap_memo_cache = _Return_Data("SwapCached", "'Swap Cache'")
+    swap_memo_cache = _Return_Data("SwapCached", "Swap Cache")
     return swap_memo_cache._get_memo_data()
 
 
@@ -165,12 +165,12 @@ def mem_writesback():
     the memory only when the cache line is ready to be replaced. 
     """
     # return value of memory that is being written back at the moment
-    writeback_memo = _Return_Data("Writeback", "'Memory Write Back'")
+    writeback_memo = _Return_Data("Writeback", "Memory Write Back")
     return writeback_memo._get_memo_data()
 
 def mem_dirty():
     # return value of memory that is currently waiting to be written back to disk after being modified (dirty).
-    dirty_bit_memo = _Return_Data("Dirty", "'Dirty Memory'")
+    dirty_bit_memo = _Return_Data("Dirty", "Dirty Memory")
     return dirty_bit_memo._get_memo_data()
 
 
@@ -186,12 +186,12 @@ def mem_shared():
     instance, everything stored therein is lost.
     """
     # return the amount used by shared memory and the tmpfs filesystem
-    shared_memo = _Return_Data("Shmem", "'Shared Memory'")
+    shared_memo = _Return_Data("Shmem", "Shared Memory")
     return shared_memo._get_memo_data()
 
 def mem_shared_hp():
     # return the amount used by shared memory and the tmpfs filesystem with huge pages
-    shared_memo_huge_pages = _Return_Data("ShmemHugePages", "'Shared Memory (Huge Pages)'")
+    shared_memo_huge_pages = _Return_Data("ShmemHugePages", "Shared Memory (Huge Pages)")
     return shared_memo_huge_pages._get_memo_data()
 
 
@@ -205,7 +205,7 @@ def mem_kreclaimable():
     with a shrinker
     """
     # return the value of kernel allocated memory, reclaimable under memory pressure
-    kernel_reclaimable_memo = _Return_Data("KReclaimable", "'Reclaimable Memory'")
+    kernel_reclaimable_memo = _Return_Data("KReclaimable", "Reclaimable Memory")
     return kernel_reclaimable_memo._get_memo_data()
 
 def mem_slab():
@@ -216,20 +216,20 @@ def mem_slab():
     of the object type that the cache is managing.
     """
     # return total memory used by kernel slab caches
-    slab = _Return_Data("Slab", "'Memory Slab'")
+    slab = _Return_Data("Slab", "Memory Slab")
     return slab._get_memo_data()
 
 def mem_sreclaimable():
     # return the amount of slab memory part that can be reclaimed under memory pressure
-    slab_reclaimable = _Return_Data("SReclaimable", "'Reclaimable Memory Slab'")
+    slab_reclaimable = _Return_Data("SReclaimable", "Reclaimable Memory Slab")
     return slab_reclaimable._get_memo_data()
 
 def mem_sunreclaim():
     # return the amount of slab memory part that cannot be reclaimed, even when the system is low on memory
-    slab_unreclaimable = _Return_Data("SUnreclaim", "'Unclaimable Memory Slab'")
+    slab_unreclaimable = _Return_Data("SUnreclaim", "Unclaimable Memory Slab")
     return slab_unreclaimable._get_memo_data()
 
 def mem_kernel_stack():
     # return the sum of all kernel stack memory
-    kernel_stack = _Return_Data("KernelStack", "'Kernel Stack Memory'")
+    kernel_stack = _Return_Data("KernelStack", "Kernel Stack Memory")
     return kernel_stack._get_memo_data()
