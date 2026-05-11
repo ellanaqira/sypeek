@@ -42,7 +42,10 @@ def _get_memo_data_meminfo(keyword: str, keyword_error: str):
         1 KiB = 1.024 KB
         """
         # return value in Kilobytes
-        return int(data_dict[keyword]) * 1.024
+        try:
+            return int(data_dict[keyword]) * 1.024
+        except KeyError:
+            _return_memo_error(keyword_error)
 
 
 
@@ -77,16 +80,10 @@ class _Return_Data:
         self.keyword_error = keyword_error
     
     def _show_meminfo_memo_data(self):
-        try:
             return _get_memo_data_meminfo(self.keyword, self.keyword_error)
-        except KeyError:
-            _return_memo_error(self.keyword_error)
 
     def _show_free_memo_data(self):
-        try:
             return _get_memo_data_free(self.keyword, self.keyword_error)
-        except KeyError:
-            _return_memo_error(self.keyword_error)
 
 
 
@@ -109,7 +106,7 @@ def mem_available():
 
 def mem_used():
     # return used memory
-    used_memo = _Return_Data("used", "Used Memorys")
+    used_memo = _Return_Data("used", "Used Memory")
     return used_memo._show_free_memo_data()
 
 
