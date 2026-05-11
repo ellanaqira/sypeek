@@ -1,3 +1,5 @@
+import subprocess
+
 
 class MemoInfoError(Exception):
     """
@@ -31,10 +33,17 @@ def _get_memo_data_meminfo(keyword: str, keyword_error: str):
         _return_memo_error(keyword_error)
     
     else:
-        # return value in Kilobyte
-        return int(data_dict[keyword])
-   
+        """
+        1 KiB = 1024 bytes
+        1 KB  = 1000 bytes
 
+        based on the information above
+        1 KiB = (1024 / 1000) KB
+        1 KiB = 1.024 KB
+        """
+        # return value in Kilobytes
+        return int(data_dict[keyword]) * 1.024
+   
 
 class _Return_Data:
     def __init__(self, keyword: str, keyword_error: str):
@@ -46,6 +55,26 @@ class _Return_Data:
             return _get_memo_data_meminfo(self.keyword, self.keyword_error)
         except KeyError:
             _return_memo_error(self.keyword_error)
+
+
+
+def _get_memo_data_free(keyword: str):
+    mem_data_list = []
+    mem_data_dict = {}
+
+    mem_datas = subprocess.run("free", capture_output=True, text=True)
+    mem_datas = mem_datas.stdout.split('\n')
+
+    for mem_data in mem_datas:
+        mem_data_list.append(mem_data.split())
+    
+    del mem_data_list[1][0], mem_data_list[2]
+
+    for key, value in zip(mem_data_list[0], mem_data_list[1]):
+        mem_data_dict[key] = value
+    
+    # return value in Kilobytes
+    return int(mem_data_dict[keyword]) * 1.024
 
 
 
