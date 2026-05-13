@@ -14,7 +14,6 @@ class _Return_Notfile_Exception_Memo:
         exception_msg: str = f"Couldn't get '{self.keyword_error}' information"
 
         @patch("builtins.open", side_effect=memory.MemoInfoError(exception_msg))
-        
         def _inside(mocked_file):
             with pytest.raises(memory.MemoInfoError, match=exception_msg):
                 memory._get_memo_data_meminfo(self.keyword, self.keyword_error)
@@ -68,3 +67,27 @@ def test_notfile_exception_mem_total():
 
 def test_keyword_exception_mem_total():
     _Return_Keyword_Exception_Memo("Total Memory")._meminfo_keyword_exeption()
+
+
+# free memory
+def test_mock_mem_free(mocker):
+    _Mock_Function()._mock_meminfo_func(mocker)
+    assert memory.mem_free() == _Mock_Function().mocked_value
+
+def test_notfile_exception_mem_free():
+    _Return_Notfile_Exception_Memo("MemFree", "Free Memory")._notfile_meminfo_exception()
+
+def test_keyword_exception_mem_free():
+    _Return_Keyword_Exception_Memo("Free Memory")._meminfo_keyword_exeption()
+
+
+# available memory
+def test_mock_mem_available(mocker):
+    _Mock_Function()._mock_meminfo_func(mocker)
+    assert memory.mem_free() == _Mock_Function().mocked_value
+
+def test_notfile_exception_mem_available():
+    _Return_Notfile_Exception_Memo("MemAvailable", "Available Memory")._notfile_meminfo_exception()
+
+def test_keyword_exception_mem_available():
+    _Return_Keyword_Exception_Memo("Available Memory")._meminfo_keyword_exeption()
