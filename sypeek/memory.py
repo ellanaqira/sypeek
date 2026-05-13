@@ -70,7 +70,10 @@ def _get_memo_data_free(keyword: str, keyword_error: str):
             mem_data_dict[key] = value
         
         # return value in Kilobytes
-        return int(mem_data_dict[keyword]) * 1.024
+        try:
+            return int(mem_data_dict[keyword]) * 1.024
+        except KeyError:
+            _return_memo_error(keyword_error)
     
 
 
