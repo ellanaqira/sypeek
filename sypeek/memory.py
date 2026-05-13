@@ -168,7 +168,7 @@ def mem_swap_total():
 
 def mem_swap_free():
     # return the value of unused swap space
-    return _get_memo_data_meminfo("SwapFree", "Free Swap Space'")
+    return _get_memo_data_meminfo("SwapFree", "Free Swap Space")
 
 def mem_swap_cache():
     # return the value of recently used swap memory
