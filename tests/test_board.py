@@ -34,7 +34,7 @@ def test_mock_board_vendor(mocker):
     _mock_board_funct(mocker, mocked_vendor)
     assert board.board_vendor() == mocked_vendor
 
-def test_exception_board_name():
+def test_exception_board_vendor():
     _exc_board_funct("Board Vendor")
 
 
@@ -44,5 +44,5 @@ def test_board_version(mocker):
     _mock_board_funct(mocker, mocked_version)
     assert board.board_version() == mocked_version
     
-def test_exception_board_name():
+def test_exception_board_version():
     _exc_board_funct("Board Version")
