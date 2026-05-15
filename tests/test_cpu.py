@@ -1,147 +1,141 @@
 import pytest
 from sypeek import cpu
+from unittest.mock import patch
 
 
-class _Return_Exception():
+class _Return_Exception:
+    """
+    test the cpu function to return an exception when the code
+    contains problematic command and/or keyword is executed
+    """
+
     def __init__(self, command: str, keyword: str, keyword_error: str):
         self.command = command
         self.keyword = keyword
         self.keyword_error = keyword_error
 
-    def _return_exception(self):
+    def _return_get_data_exception(self):
         with pytest.raises(cpu.CPUInfoError) as excinfo:
             cpu._get_data(self.command, self.keyword, self.keyword_error)
-        assert str(excinfo.value) == f"Couldn't get cpu '{self.keyword_error}' information"
+        assert excinfo.value.message == f"Couldn't get cpu '{self.keyword_error}' information"
+
+
+
+class _Mocked_Cpu_Func:
+    def __init__(self, mocked_value):
+        self.mocked_value = mocked_value
+
+    def _mock_cpu_get_data(self, mocker_plugin):
+        mocker_plugin.patch("sypeek.cpu._get_data").return_value = self.mocked_value
+
+    def _mock_cpu_cache_level(self, mocker_plugin):
+        mocker_plugin.patch("sypeek.cpu._get_level_cache").return_value = self.mocked_value
 
 
 
 # Get CPU Vendor Test ==========================================
 
-def test_get_cpu_vendor():
-    assert cpu.cpu_vendor() == "AMD"
+# mocked function
+def test_get_cpu_vendor(mocker):
+    mocked_value: dict = {"vendor id" : "GenuineIntel", "vendor" : "Intel"}
+
+    _Mocked_Cpu_Func(mocked_value["vendor id"])._mock_cpu_get_data(mocker)
+    assert cpu.cpu_vendor() == mocked_value["vendor"]
+
 
 def test_cpu_vendor_not_found(mocker):
     # test cpu_vendor fuction to return "not found message" when the cpu vendor cannot be found
 
-    mocked_name = "unknown_cpu"
-    cpu_vendor_mock = mocker.patch("sypeek.cpu.cpu_vendor")
-    cpu_vendor_mock.return_value = f"vendor name of '{mocked_name}' could not be found"
+    mocked_cpu_vendor = "Unknown_CPU"
 
-    assert cpu.cpu_vendor() == f"vendor name of '{mocked_name}' could not be found"
-    
+    _Mocked_Cpu_Func(mocked_cpu_vendor)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_vendor() == f"vendor name of '{mocked_cpu_vendor}' could not be found"
 
-"""
-test the cpu_vendor function to return an exception when arguments
-in command and/or keyword parameters are problematic
 
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_vendor():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "Vendor ID", "Vendor")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_vendor():
     wrong_keyw_exc = _Return_Exception("lscpu", "wrong_vendor", "Vendor")
-    wrong_keyw_exc._return_exception()
-
+    wrong_keyw_exc._return_get_data_exception()
 
 def test_wrong_command_and_keyword_cpu_vendor():
     wrong_com_keyw_exc = _Return_Exception("wrong_lscpu", "wrong_vendor", "Vendor")
-    wrong_com_keyw_exc._return_exception()
+    wrong_com_keyw_exc._return_get_data_exception()
 
 
 
 # Get CPU Vendor ID Test =======================================
 
-def test_get_cpu_vendorid():
-    assert cpu.cpu_vendorid() == "AuthenticAMD"
+def test_get_cpu_vendorid(mocker):
+    mock_vendorid: str = "NexGenDriven"
+
+    _Mocked_Cpu_Func(mock_vendorid)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_vendorid() == mock_vendorid
 
 
-"""
-test the cpu_vendorid function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_vendorid():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "Vendor ID", "Vendor ID")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_vendorid():
     wrong_keyw_exc = _Return_Exception("lscpu", "wrong_vendor", "Vendor ID")
-    wrong_keyw_exc._return_exception()
-
+    wrong_keyw_exc._return_get_data_exception()
 
 def test_wrong_command_and_keyword_cpu_vendorid():
     wrong_com_keyw_exc = _Return_Exception("wrong_lscpu", "wrong_vendor", "Vendor ID")
-    wrong_com_keyw_exc._return_exception()
+    wrong_com_keyw_exc._return_get_data_exception()
 
 
 
 # Get CPU Name Test ============================================
 
-def test_get_cpu_name():
-    assert cpu.cpu_name() == "AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx"
+def test_get_cpu_name(mocker):
+    mock_cpu_name: str = "Intel Core i5 7200u"
+
+    _Mocked_Cpu_Func(mock_cpu_name)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_name() == mock_cpu_name
 
 
-"""
-test the cpu_name function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
-
+# return an exception 
 def test_wrong_command_cpu_name():    
     wrong_com_exc = _Return_Exception("wrong_lscpu", "Model name", "Model Name")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_name():
     wrong_com_exc = _Return_Exception("lscpu", "wrong_model_name", "Model Name")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_name():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_model_name", "Model Name")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
 # Get CPU Thread Test ==========================================
 
-def test_get_cpu_threads():
-    assert cpu.cpu_threads() == 2
+def test_get_cpu_threads(mocker):
+    mock_thread: int = 2
+
+    _Mocked_Cpu_Func(mock_thread)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_threads() == mock_thread
 
 
-"""
-test the cpu_threads function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_threads():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "Thread", "Thread")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_threads():
     wrong_com_exc = _Return_Exception("lscpu", "wrong_thread", "Thread")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_threads():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_thread", "Thread")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
@@ -160,248 +154,203 @@ def test_get_cpu_cores_error():
     assert cpu.cpu_cores(True) == "core must be 'l' or 'p'"
 
 
-"""
-test the cpu_cores function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 # Logical cores
     
 def test_wrong_command_cpu_logical_cores():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Logical Core")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_logical_cores():
     wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Logical Core")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_logical_cores():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_core", "Logical Core")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 # Physical Core
 
 def test_wrong_command_cpu_physical_cores():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Physical Core")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_physical_cores():
     wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Physical Core")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_physical_cores():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_core", "Physical Core")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
 # Get CPU Family ===============================================
 
-def test_get_cpu_family():
-    assert cpu.cpu_family() == "0xf (15)"
+def test_get_cpu_family(mocker):
+    mock_cpu_family: str = "0xf (15)"
+
+    _Mocked_Cpu_Func(mock_cpu_family)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_family() == mock_cpu_family
 
 
-"""
-test the cpu_family function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_family():
     wrong_com_exc = _Return_Exception("wrong_cpuid", "family", "Family")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_family():
     wrong_com_exc = _Return_Exception("cpuid", "wrong_family", "Family")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_family():
     wrong_com_exc = _Return_Exception("wrong_cpuid", "wrong_family", "Family")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
 # Get CPU Family Synth =========================================
 
-def test_get_cpu_family_synth():
-    assert cpu.cpu_family_synth() == "0x17 (23)"
+def test_get_cpu_family_synth(mocker):
+    mock_cpu_family_synth: str = "0x17 (23)"
+
+    _Mocked_Cpu_Func(mock_cpu_family_synth)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_family_synth() == mock_cpu_family_synth
 
 
-"""
-test the cpu_family_synth function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_family_synth():
     wrong_com_exc = _Return_Exception("wrong_cpuid", "family synth", "Family Synth")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_family_synth():
     wrong_com_exc = _Return_Exception("cpuid", "wrong_family_synth", "Family Synth")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_family_synth():
     wrong_com_exc = _Return_Exception("wrong_family_synth", "wrong_family_synth", "Family Synth")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
 # Get CPU Model ================================================
 
-def test_get_cpu_model():
-    assert cpu.cpu_model() == "0x8 (8)"
+def test_get_cpu_model(mocker):
+    mock_cpu_model = "0x8 (8)"
+
+    _Mocked_Cpu_Func(mock_cpu_model)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_model() == mock_cpu_model
 
 
-"""
-test the cpu_family_synth function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_model():
     wrong_com_exc = _Return_Exception("wrong_cpuid", "model", "Model")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_model():
     wrong_com_exc = _Return_Exception("cpuid", "wrong_model", "Model")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_model():
     wrong_com_exc = _Return_Exception("wrong_cpuid", "wrong_model", "Model")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
 # Get CPU Model Synth ==========================================
 
-def test_get_cpu_model_synth():
-    assert cpu.cpu_model_synth() == "0x18 (24)"
+def test_get_cpu_model_synth(mocker):
+    mock_cpu_model_synth: str = "0x18 (24)"
+
+    _Mocked_Cpu_Func(mock_cpu_model_synth)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_model_synth() == mock_cpu_model_synth
 
 
-"""
-test the cpu_model_synth function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_model_synth():
     wrong_com_exc = _Return_Exception("wrong_cpuid", "family synth", "Model Synth")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_model_synth():    
     wrong_com_exc = _Return_Exception("cpuid", "wrong_model_synth", "Model Synth")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_model_synth():
     wrong_com_exc = _Return_Exception("wrong_cpuid", "wrong_model_synth", "Model Synth")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
 # Get CPU Stepping =============================================
 
-def test_get_cpu_stepping():
-    assert cpu.cpu_stepping() == 1
+def test_get_cpu_stepping(mocker):
+    mock_cpu_stepping: int = 1
+
+    _Mocked_Cpu_Func(mock_cpu_stepping)._mock_cpu_get_data(mocker)
+    assert cpu.cpu_stepping() == mock_cpu_stepping
 
 
-"""
-test the cpu_stepping function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_stepping():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "Stepping", "Stepping")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_keyword_cpu_stepping():
     wrong_com_exc = _Return_Exception("lscpu", "wrong_stepping", "Stepping")
-    wrong_com_exc._return_exception()
-
+    wrong_com_exc._return_get_data_exception()
 
 def test_wrong_command_keyword_cpu_stepping():
     wrong_com_exc = _Return_Exception("wrong_lscpu", "wrong_stepping", "Stepping")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
 # Get CPU Speed ================================================
 
-def test_get_cpu_speed():
-    assert cpu.cpu_speed(0)
-    assert cpu.cpu_speed(1)
-    assert cpu.cpu_speed(2)
-    assert cpu.cpu_speed(3)
-    assert cpu.cpu_speed(4)
-    assert cpu.cpu_speed(5)
-    assert cpu.cpu_speed(6)
-    assert cpu.cpu_speed(7)
+# mock cpu speed function
+def mock_cpu_speed(mocker_plugin, cpu_parameter, mocked_value):
+    mocker_plugin.patch("sypeek.cpu.cpu_speed").return_value = mocked_value
+    assert cpu.cpu_speed(cpu_parameter) == mocked_value
+
+def test_get_cpu_speed(mocker):
+    mock_cpu_speed(mocker, 0, 1999.999)
+    mock_cpu_speed(mocker, 1, 1999.999)
+    mock_cpu_speed(mocker, 2, 1999.999)
+    mock_cpu_speed(mocker, 3, 1999.999)
+
+def test_get_cpu_speed_error(mocker):
+    mock_cpu_speed(mocker, 4, "core number must be int() and between 0 and 4")
+    mock_cpu_speed(mocker, 3.0, "core number must be int() and between 0 and 4")
+    mock_cpu_speed(mocker, '3', "core number must be int() and between 0 and 4")
+    mock_cpu_speed(mocker, True, "core number must be int() and between 0 and 4")
 
 
-def test_get_cpu_speed_error():
-    logical_cpu: str = cpu.cpu_cores('l') - 1
+# return an exception 
+def test_cpu_speed_exception():
+    exc_message: str = "Couldn't get cpu 'Speed' information"
 
-    assert cpu.cpu_speed(8) == f"core number must be int() and between 0 and {logical_cpu}"
-    assert cpu.cpu_speed(3.0) == f"core number must be int() and between 0 and {logical_cpu}"
-    assert cpu.cpu_speed('3') == f"core number must be int() and between 0 and {logical_cpu}"
-    assert cpu.cpu_speed(True) == f"core number must be int() and between 0 and {logical_cpu}"
-
-"""
-test the cpu_speed function to return an exception when
-the code contains unexist file path or problematic keyword
-
-the function below is represents the conditions when a problem occurs
-when the code contains unexist file path or problematic keyword is executed
-"""
-
-def test_mock_filepath_cpu_speed(mocker):
-    cpu_speed_mock = mocker.patch("sypeek.cpu.cpu_speed")
-    cpu_speed_mock.return_value = "Couldn't get cpu 'Speed' information"
-
-    assert cpu.cpu_speed(0) == "Couldn't get cpu 'Speed' information"
-
-
-def test_mock_keyword_cpu_speed(mocker):
-    cpu_speed_mock = mocker.patch("sypeek.cpu.cpu_speed")
-    cpu_speed_mock.return_value = "Couldn't get cpu 'Speed' information"
-
-    assert cpu.cpu_speed(0) == "Couldn't get cpu 'Speed' information"
+    with patch("sypeek.cpu.cpu_speed", side_effect=cpu.CPUInfoError(exc_message)):
+        with pytest.raises(cpu.CPUInfoError) as excinfo:
+            cpu.cpu_speed(0)
+        assert excinfo.value.message == exc_message
 
 
 
 # Get CPU Temperature ==========================================
 
-def test_get_cpu_temperature():
-    assert cpu.cpu_temp('c')
-    assert cpu.cpu_temp('C')
-    assert cpu.cpu_temp('f')
-    assert cpu.cpu_temp('F')
-    assert cpu.cpu_temp('k')
-    assert cpu.cpu_temp('K')
+# mock cpu temp function
+def mock_cpu_temp(mocker_plugin, cpu_parameter, mocked_value):
+    mocker_plugin.patch("sypeek.cpu.cpu_temp").return_value = mocked_value
+    assert cpu.cpu_temp(cpu_parameter) == mocked_value
+
+def test_get_cpu_temperature(mocker):
+    mock_cpu_temp(mocker, 'c', 64.8)
+    mock_cpu_temp(mocker, 'C', 64.8)
+    mock_cpu_temp(mocker, 'f', 64.8)
+    mock_cpu_temp(mocker, 'F', 64.8)
+    mock_cpu_temp(mocker, 'k', 64.8)
+    mock_cpu_temp(mocker, 'K', 64.8)    
 
 def test_get_cpu_temperature_error():
     assert cpu.cpu_temp('x') == "temperature scale must be 'c', 'f', or 'k'"
@@ -410,50 +359,43 @@ def test_get_cpu_temperature_error():
     assert cpu.cpu_temp(True) == "temperature scale must be 'c', 'f', or 'k'"
 
 
-"""
-test the cpu temperature function to return an exception when arguments
-in command and/or keyword parameters are problematic
-
-the function below is represents the conditions when a problem occurs
-when the code contains problematic command and/or keyword is executed
-"""
-
+# return an exception 
 def test_wrong_command_cpu_temperature():
     wrong_com_exc = _Return_Exception("wrong_sensors", "Tctl", "Temperature")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 def test_wrong_keyword_cpu_temperature():
     wrong_com_exc = _Return_Exception("sensors", "wrong_Tctl", "Temperature")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 def test_wrong_command_keyword_cpu_temperature():
     wrong_com_exc = _Return_Exception("wrong_sensors", "wrong_Tctl", "Temperature")
-    wrong_com_exc._return_exception()
+    wrong_com_exc._return_get_data_exception()
 
 
 
-# mock cpu._get_level_cache function
+# CPU Cache Levels =============================================
 
-class _Mock_Cache_Level:
-    def __init__(self, keyword_error: str, function_name):
-        self.keyw_error = keyword_error
-        self.func_name = function_name
-
-    def _mocked_cache_level(self, mocker_plugin):
-        mocker_plugin.path("sypeek.cpu._get_level_cache", return_value=f"Couldn't get cpu '{self.keyw_error}' information")
-        assert self.func_name == f"Couldn't get cpu '{self.keyw_error}' information"
+# return _get_level_cache exception
+def _return_cache_level_exception(order: int, keyword_error: str):
+    with pytest.raises(cpu.CPUInfoError) as excinfo:
+        cpu._get_level_cache(order, keyword_error)
+    assert excinfo.value.message == f"Couldn't get cpu '{keyword_error}' information"
 
 
 
-# Get CPU Cache Level 1 ========================================
+# Get CPU Cache Level 1
 
-def test_cpu_cache_level1():
-    assert cpu.cpu_l1c('d') == 32768
-    assert cpu.cpu_l1c('D') == 32768
-    assert cpu.cpu_l1c('i') == 65536
-    assert cpu.cpu_l1c('I') == 65536
+def test_cpu_cache_level1(mocker):
+    mock_cpu_cache_level: int = 45555
+
+    _Mocked_Cpu_Func(mock_cpu_cache_level)._mock_cpu_cache_level(mocker)
+    assert cpu.cpu_l1c('d') == mock_cpu_cache_level
+    assert cpu.cpu_l1c('D') == mock_cpu_cache_level
+    assert cpu.cpu_l1c('i') == mock_cpu_cache_level
+    assert cpu.cpu_l1c('I') == mock_cpu_cache_level
 
 def test_cpu_cache_level_l1_error():
     assert cpu.cpu_l1c('h') == "cache type must be 'd' or 'i'"
@@ -461,33 +403,37 @@ def test_cpu_cache_level_l1_error():
     assert cpu.cpu_l1c(5.0) == "cache type must be 'd' or 'i'"
     assert cpu.cpu_l1c(True) == "cache type must be 'd' or 'i'"
 
+# return an exception 
+def mock_cpu_cache_l1_data():
+    _return_cache_level_exception(0, "Data Cache Level 1")
 
-def mock_cpu_cache_l1_data(mocker):
-    mocked_l1c_d = _Mock_Cache_Level("Data Cache Level 1", cpu.cpu_l1c('d'))
-    mocked_l1c_d._mocked_cache_level(mocker)
-
-def mock_cpu_cache_l1_instruction(mocker):
-    mocked_l1c_i = _Mock_Cache_Level("Instruction Cache Level 1", cpu.cpu_l1c('i'))
-    mocked_l1c_i._mocked_cache_level(mocker)
+def mock_cpu_cache_l1_instruction():
+    _return_cache_level_exception(1, "Instruction Cache Level 1")
 
 
 
-# Get CPU Cache Level 2 ========================================
+# Get CPU Cache Level 2 
 
-def test_cpu_cache_level2():
-    assert cpu.cpu_l2c() == 524288
+def test_cpu_cache_level2(mocker):
+    mock_cpu_cache_level: int = 45555
 
-def mock_cpu_cache_level2(mocker):
-    mocked_l2 = _Mock_Cache_Level("Cache Level 2", cpu.cpu_l2c())
-    mocked_l2._mocked_cache_level(mocker)
+    _Mocked_Cpu_Func(mock_cpu_cache_level)._mock_cpu_cache_level(mocker)
+    assert cpu.cpu_l2c() == mock_cpu_cache_level
+
+# return an exception 
+def mock_cpu_cache_level2():
+    _return_cache_level_exception(2, "Cache Level 2")
 
 
 
-# Get CPU Cache Level 3 ========================================
+# Get CPU Cache Level 3 
 
-def test_cpu_cache_level3():
-    assert cpu.cpu_l3c() == 4194304
+def test_cpu_cache_level3(mocker):
+    mock_cpu_cache_level: int = 45555
 
-def mock_cpu_cache_level2(mocker):
-    mocked_l3 = _Mock_Cache_Level("Cache Level 3", cpu.cpu_l3c())
-    mocked_l3._mocked_cache_level(mocker)
+    _Mocked_Cpu_Func(mock_cpu_cache_level)._mock_cpu_cache_level(mocker)
+    assert cpu.cpu_l3c() == mock_cpu_cache_level
+
+# return an exception 
+def mock_cpu_cache_level2():
+    _return_cache_level_exception(3, "Cache Level 3")
