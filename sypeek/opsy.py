@@ -70,13 +70,27 @@ def distro_name():
 def distro_ver():
     return _get_os_info("VERSION_ID", "Distribution Version")
 
-def uptime():
+def uptime(option: str = ""):
     try:
         with open("/proc/uptime") as time:
             time = time.read().split()
-            time =(float(time[0]) / 60)
+            time =int(float(time[0]) / 60)
+            
     except FileNotFoundError:
         _raise_opsyinfoerror("Uptime")
+
     else:
-        # return value in minutes
-        return int(time)
+        # return uptime in 'pretty' format
+        if option.lower() == 'p':
+            hour: int = 0
+            if time >= 60:
+                while time >= 60:
+                    time = time-60
+                    hour = hour + 1
+
+            minutes = time
+            return f"{hour} hours, {minutes} minutes"            
+            
+        else:
+            # return uptime in minutes
+            return int(time)
