@@ -80,8 +80,8 @@ def uptime(option: str = ""):
         _raise_opsyinfoerror("Uptime")
 
     else:
-        # return uptime in 'pretty' format
         if option.lower() == 'p':
+            # return uptime in 'pretty' format
             hour: int = 0
             if time >= 60:
                 while time >= 60:
@@ -91,6 +91,9 @@ def uptime(option: str = ""):
             minutes = time
             return f"{hour} hours, {minutes} minutes"            
             
-        else:
+        elif option == "":
             # return uptime in minutes
             return int(time)
+        
+        else:
+            return "options most be 'p' or an empty string"
