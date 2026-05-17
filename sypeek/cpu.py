@@ -21,24 +21,76 @@ def _return_cpu_error(keyword_error: str):
     raise CPUInfoError(f"Couldn't get cpu '{keyword_error}' information")
 
 
-def _get_data(command:str, keyword:str, keyword_error: str):
+
+# _get_cpu_data_from_cpuinfo function ==============================================================
+
+def _get_cpu_data_from_cpuinfo(keyword: str, keyword_error: str, core_num: int = 0):
+    # function to retrive information from cpuinfo file
+    cpu_list = []
     try:
-        data = subprocess.run(command, capture_output=True, text=True)
+        with open("/proc/cpuinfo") as f:
+            cpu_dict = {}
+            for line in f:
+                line = line.strip()
+
+                if not line:
+                    if cpu_dict:
+                        cpu_list.append(cpu_dict)
+                        cpu_dict = {}
+                    continue
+                key, value = [x.strip() for x in line.split(":", 1)]
+                cpu_dict[key] = value
+
+            # store the last cpu information, because there is no empty line at the end of the file  
+            if cpu_dict:
+                cpu_list.append(cpu_dict)
 
     except FileNotFoundError:
-        _return_cpu_error(keyword_error)
-    
-    else:
-        data = data.stdout.splitlines()
-        for line in data:
-            if keyword in line:
-                try:
-                    return line.split(':')[1].strip()
-                except IndexError:
-                    return line.split('=')[1].strip()
-                
         return _return_cpu_error(keyword_error)
-         
+
+    else:
+        _CORE_NUM_ERROR_MESSAGE = f"core number must be int() and between 0 and {len(cpu_list)-1}"
+
+        if type(core_num) != int:
+            return _CORE_NUM_ERROR_MESSAGE
+
+        elif core_num < 0 or core_num > (len(cpu_list)-1):
+            return _CORE_NUM_ERROR_MESSAGE
+
+        elif keyword == "all cores":
+            return len(cpu_list)
+        
+        else:
+            try:
+                if cpu_list[core_num].get(keyword):
+                    return cpu_list[core_num].get(keyword)
+                
+                else:
+                    _return_cpu_error(keyword_error)
+                
+            except TypeError:
+                _return_cpu_error(keyword_error)
+
+
+# functions that rely on _get_cpu_data_from_cpuinfo function
+def cpu_cores(core_type: str):
+    _CPU_CORES_ERROR_MESSAGE = "core type must be 'l' or 'p'"
+
+    try:
+        # return number of cpu physical core(s)
+        if core_type.lower() == 'p':
+            return int(_get_cpu_data_from_cpuinfo("cpu cores", "Physical Core"))
+        
+        # return number of cpu logical core(s)
+        elif core_type.lower() == 'l':
+            return int(_get_cpu_data_from_cpuinfo("all cores", "Logical Core"))
+        
+        else:
+            return _CPU_CORES_ERROR_MESSAGE
+        
+    except AttributeError:
+        return _CPU_CORES_ERROR_MESSAGE
+
 def cpu_vendor():
     vendor_id_dict = {
         # general vendor id
@@ -75,109 +127,76 @@ def cpu_vendor():
         "Neko Project": "Neko Project",
     }
 
-    get_vendor_id = _get_data("lscpu", "Vendor ID", "Vendor")
+    get_vendor_id = _get_cpu_data_from_cpuinfo("vendor_id", "Vendor")
     vendor = vendor_id_dict.get(get_vendor_id)
     
     # handling vendor id not found
     if vendor == None:
         return f"vendor name of '{get_vendor_id}' could not be found"
     else:
-        return vendor
-    
+        return vendor  
 
 def cpu_vendorid():
-    return _get_data("lscpu", "Vendor ID", "Vendor ID")
+    return _get_cpu_data_from_cpuinfo("vendor_id", "Vendor ID")
 
-def cpu_name():
+def cpu_model_name():
     # return cpu model name
-    return _get_data("lscpu", "Model name", "Model Name")
-
-def cpu_threads():
-    # return number of thread(s) per core
-    return int(_get_data("lscpu", "Thread", "Thread"))   
-
-
-def cpu_cores(core: str):
-    _CPU_CORES_ERROR_MESSAGE = "core must be 'l' or 'p'"
-
-    try:
-        # return number of cpu logical core(s)
-        if core.lower() == 'l':
-            return int(_get_data("lscpu", "Core(s) per socket", "Logical Core")) * int(_get_data("lscpu", "Thread", "Logical Core"))
-            
-        # return number of cpu physical core(s)
-        elif core.lower() == 'p':
-            return int(_get_data("lscpu", "Core(s) per socket", "Physical Core"))
-        
-        else:
-            return _CPU_CORES_ERROR_MESSAGE
-        
-    except AttributeError:
-        return _CPU_CORES_ERROR_MESSAGE
-
-
-def cpu_family():
-    # return cpu family
-    return _get_data("cpuid", "family", "Family")
-
-def cpu_family_synth():
-    # return cpu family synth
-    return _get_data("cpuid", "family synth", "Family Synth")
-
-def cpu_model():
-    # return cpu model
-    return _get_data("cpuid", "model", "Model")
-    
-def cpu_model_synth():
-    # return cpu model synth
-    return _get_data("cpuid", "model synth", "Model Synth")
+    return _get_cpu_data_from_cpuinfo("model name", "Model Name")
 
 def cpu_stepping():
     # return cpu stepping value
-    return int(_get_data("lscpu", "Stepping", "Stepping"))
+    return int(_get_cpu_data_from_cpuinfo("stepping", "Stepping"))
 
-       
 def cpu_speed(core_num: int):
-    # return core speed in MHz by the number of order (core_num)
-    cpus = []
-    try:
-        with open("/proc/cpuinfo") as f:
-            cpu = {}
-            for line in f:
-                line = line.strip()
+    # return cpu speed
+    return _get_cpu_data_from_cpuinfo("cpu MHz", "Speed", core_num)
 
-                if not line:
-                    if cpu:
-                        cpus.append(cpu)
-                        cpu = {}
-                    continue
-                key, value = [x.strip() for x in line.split(":", 1)]
-                cpu[key] = value
-            # store the last cpu information, because there is no empty line at the end of the file  
-            if cpu:
-                cpus.append(cpu)
+
+
+# _get_cpu_data_from_command function ==============================================================
+
+def _get_cpu_data_from_command(command:str, keyword:str, keyword_error: str):
+    try:
+        data = subprocess.run(command, capture_output=True, text=True)
 
     except FileNotFoundError:
-        return _return_cpu_error("Speed")
-
+        _return_cpu_error(keyword_error)
+    
     else:
-        _CPU_SPEED_ERROR_MESSAGE = f"core number must be int() and between 0 and {len(cpus)-1}"
+        data = data.stdout.splitlines()
+        for line in data:
+            if keyword in line:
+                try:
+                    return line.split(':')[1].strip()
+                except IndexError:
+                    return line.split('=')[1].strip()
+                
+        return _return_cpu_error(keyword_error)
 
-        if type(core_num) != int:
-            return _CPU_SPEED_ERROR_MESSAGE
-        
-        else:
-            if core_num < 0 or core_num >= len(cpus):
-                return _CPU_SPEED_ERROR_MESSAGE
-        
-            if cpus[core_num].get("cpu MHz"):
-                return float(cpus[core_num].get("cpu MHz"))
-            else:
-                _return_cpu_error("Speed")
- 
+
+# functions that rely on _get_cpu_data_from_command function
+def cpu_threads():
+    # return number of thread(s) per core
+    return int(_get_cpu_data_from_command("lscpu", "Thread", "Thread"))   
+
+def cpu_family():
+    # return cpu family
+    return _get_cpu_data_from_command("cpuid", "family", "Family")
+
+def cpu_family_synth():
+    # return cpu family synth
+    return _get_cpu_data_from_command("cpuid", "family synth", "Family Synth")
+
+def cpu_model():
+    # return cpu model
+    return _get_cpu_data_from_command("cpuid", "model", "Model")
+    
+def cpu_model_synth():
+    # return cpu model synth
+    return _get_cpu_data_from_command("cpuid", "model synth", "Model Synth")
 
 def cpu_temp(scale: str):
-    celcius = float(_get_data("sensors", "Tctl", "Temperature").replace('+','').replace("°C",''))
+    celcius = float(_get_cpu_data_from_command("sensors", "Tctl", "Temperature").replace('+','').replace("°C",''))
     
     _CPU_TEMPERATURE_ERROR_MESSAGE = "temperature scale must be 'c', 'f', or 'k'"
 
@@ -193,9 +212,12 @@ def cpu_temp(scale: str):
     
     except AttributeError:
         return _CPU_TEMPERATURE_ERROR_MESSAGE
-     
+    
 
-def _get_level_cache(order: int, keyword_error: str):
+
+# _get_cpu_cache_level function ====================================================================
+
+def _get_cpu_cache_level(order: int, keyword_error: str):
     # get cache level data from cpuid
     try:
         cpuid_data = subprocess.run("cpuid", capture_output=True, text=True)
@@ -227,25 +249,25 @@ def _get_level_cache(order: int, keyword_error: str):
             return _return_cpu_error(keyword_error)
 
 
+# functions that rely on _get_cpu_cache_level function
 def cpu_l1c(cache_type: str):
     _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
 
     try:
         if cache_type.lower() == 'd': # Level 1 data cache
-            return _get_level_cache(0, "Data Cache Level 1")
+            return _get_cpu_cache_level(0, "Data Cache Level 1")
         elif cache_type.lower() == 'i': # Level 1 instruction cache
-            return _get_level_cache(1, "Instruction Cache Level 1")
+            return _get_cpu_cache_level(1, "Instruction Cache Level 1")
         else:
             return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
         
     except AttributeError:
         return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
 
-
 def cpu_l2c():
     # return cpu Level 2 cache
-    return _get_level_cache(2, "Cache Level 2")
+    return _get_cpu_cache_level(2, "Cache Level 2")
 
 def cpu_l3c():
     # return cpu Level 3 cache
-    return _get_level_cache(3, "Cache Level 3")
+    return _get_cpu_cache_level(3, "Cache Level 3")
