@@ -45,6 +45,14 @@ def _get_os_info(keyword: str, keyword_error: str):
         raise OpSyInfoError(error_msg)
     
 
+    
+def distro_name():
+    return _get_os_info("NAME", "Distribution Name")
+
+def distro_ver():
+    return _get_os_info("VERSION_ID", "Distribution Version")
+
+
 
 def opsy_kernel():
     try:
@@ -55,7 +63,7 @@ def opsy_kernel():
     else:
         return f[0].strip()
     
-def hosts_name():
+def host_name():
     try:
         with open("/etc/hostname") as f:
             f = f.read().strip()
@@ -64,13 +72,7 @@ def hosts_name():
     else:
         return f
     
-def distro_name():
-    return _get_os_info("NAME", "Distribution Name")
-
-def distro_ver():
-    return _get_os_info("VERSION_ID", "Distribution Version")
-
-def uptime(option: str = ""):
+def up_time(appearance: str = ""):
     try:
         with open("/proc/uptime") as time:
             time = time.read().split()
@@ -80,7 +82,7 @@ def uptime(option: str = ""):
         _raise_opsyinfoerror("Uptime")
 
     else:
-        if option.lower() == 'p':
+        if appearance.lower() == 'p':
             # return uptime in 'pretty' format
             hour: int = 0
             if time >= 60:
@@ -91,9 +93,9 @@ def uptime(option: str = ""):
             minutes = time
             return f"{hour} hours, {minutes} minutes"            
             
-        elif option == "":
+        elif appearance == "":
             # return uptime in minutes
             return int(time)
         
         else:
-            return "options most be 'p' or an empty string"
+            return "appearances most be 'p' or an empty string"
