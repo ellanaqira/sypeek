@@ -63,7 +63,7 @@ def _get_cpu_data_from_cpuinfo(keyword: str, keyword_error: str, core_num: int =
         else:
             try:
                 if cpu_list[core_num].get(keyword):
-                    return cpu_list[core_num].get(keyword)
+                    return float(cpu_list[core_num].get(keyword))
                 
                 else:
                     _return_cpu_error(keyword_error)
