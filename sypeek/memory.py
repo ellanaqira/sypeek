@@ -109,10 +109,6 @@ def mem_inactive():
 
 
 def mem_active_anon():
-    """
-    The (anon) means that this amount of memory
-    is being used by a service or application.
-    """
     # return active memory (anon)
     return _get_memo_data_meminfo("Active(anon)", "Active Memory (anon)")
 
@@ -150,11 +146,6 @@ def mem_buffer():
 
 
 def mem_cache():
-    """
-    Cache is a fast storage unit that is not too large in size
-    compared to other memory units and is used to store data
-    that has been accessed recently.
-    """
     # return memory cache
     return _get_memo_data_meminfo("Cached", "Memory Cache")
 
@@ -179,11 +170,6 @@ def mem_swap_cache():
 # Writeback into the Disk ======================================
 
 def mem_writesback():
-    """
-    Write back is when the data is updated only in the cache and
-    updated into the memory at a later time. Data is updated in
-    the memory only when the cache line is ready to be replaced. 
-    """
     # return value of memory that is being written back at the moment
     return _get_memo_data_meminfo("Writeback", "Memory Write Back")
 
@@ -197,13 +183,6 @@ def mem_dirty():
 # Shared Memory ================================================
 
 def mem_shared():
-    """
-    Tmpfs (temporary file system) tmpfs is a file system
-    which keeps all files in virtual memory. Everything
-    in tmpfs is temporary in the sense that no files will
-    be created on your hard drive. If you unmount a tmpfs
-    instance, everything stored therein is lost.
-    """
     # return the amount used by shared memory and the tmpfs filesystem
     return _get_memo_data_meminfo("Shmem", "Shared Memory")
 
@@ -217,22 +196,11 @@ def mem_shared_hp():
 # Kernel Memory ================================================
 
 def mem_kreclaimable():
-    """
-    Kernel allocations that the kernel will attempt to reclaim
-    under memory pressure. Includes other direct allocations
-    with a shrinker
-    """
     # return the value of kernel allocated memory, reclaimable under memory pressure
     return _get_memo_data_meminfo("KReclaimable", "Reclaimable Memory")
 
 
 def mem_slab():
-    """
-    A slab is a set of one or more contiguous pages of memory
-    set aside by the slab allocator for an individual cache.
-    This memory is further divided into equal segments the size
-    of the object type that the cache is managing.
-    """
     # return total memory used by kernel slab caches
     return _get_memo_data_meminfo("Slab", "Memory Slab")
 
