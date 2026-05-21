@@ -1,8 +1,8 @@
 # Sypeek
-Simple system monitor library made in python for Linux. 
+Python library for monitor CPU, Memory, Motherboard, Operating System, and BIOS in Linux. 
 
-- Note:
-For now, this library <mark>will likely only work smoothly and properly on Linux Mint or Ubuntu</mark>. In the future, I'll try to make it work on all Linux distributions.
+### - Note:
+<mark> This library is intended for Ubuntu-based Linux distributions.</mark> For other Linux-based distributions, it cannot be guaranteed that it will work properly.
 
 ## Usage
 ```python
@@ -19,6 +19,7 @@ print(f"total: {memory.mem_total()}")
 print(f"used : {memory.mem_used()}")
 ``` 
 output:
+
 ```
 =====(CPU info)=====
 name : Intel Core i5 7200u
@@ -30,6 +31,7 @@ used : 5592892
 
 ## Status
 Work in progress... 🚧🛠️
+
 
 ## Contributing
 This project is still a work in progress, and contributions are highly appreciated`:D`.
