@@ -1,5 +1,5 @@
 import subprocess
-
+import os
 
 class CPUInfoError(Exception):
     """
@@ -217,57 +217,67 @@ def cpu_temp(scale: str):
 
 # _get_cpu_cache_level function ====================================================================
 
-def _get_cpu_cache_level(order: int, keyword_error: str):
-    # get cache level data from cpuid
+def _get_cpu_cache_info(num_of_index_folder: int, keyword: str):
     try:
-        cpuid_data = subprocess.run("cpuid", capture_output=True, text=True)
+        path_folder: str = f"/sys/devices/system/cpu/cpu0/cache/index{num_of_index_folder}"
+        level_cache_dict = {}
+
+        with os.scandir(path_folder) as folder:
+            for file in folder:
+                if file.is_file and file.name.endswith(""):
+                    with open(file.path, encoding='utf-8') as f:
+                        key = (f.name.split('/')[-1])
+                        value = (f.read().strip())
+
+                        level_cache_dict[key] = value
 
     except FileNotFoundError:
-        _return_cpu_error(keyword_error)
-    
+        _return_cpu_error("Cache Level")
     else:
-        cpuid_data = cpuid_data.stdout.splitlines()
-        cpuid_list = []
-        for line in cpuid_data:
-            line = line.strip()
-            if line.startswith("(synth size)"):
-                line = line.split('=')[1].strip()
-                cpuid_list.append(line)
-                continue
+        return level_cache_dict[keyword]
+    
 
-        cpuid_list = list(dict.fromkeys(cpuid_list))
-
-        cpuid_new_list = []
-        for element in cpuid_list:
-            element = element.split()[0].strip()
-            cpuid_new_list.append(int(element))
-            
-        # return value in kibibytes - 1 kibibyte (KiB) is 1024 bytes.
-        try:    
-            return int(cpuid_new_list[order])
-        except IndexError:
-            return _return_cpu_error(keyword_error)
-
-
-# functions that rely on _get_cpu_cache_level function
+# functions that rely on _get_cpu_cache_info function
 def cpu_l1c(cache_type: str):
     _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
 
     try:
-        if cache_type.lower() == 'd': # Level 1 data cache
-            return _get_cpu_cache_level(0, "Data Cache Level 1")
-        elif cache_type.lower() == 'i': # Level 1 instruction cache
-            return _get_cpu_cache_level(1, "Instruction Cache Level 1")
+        if cache_type.lower() == 'd': # Level 1 data cache in byte
+            try:
+                d_cache_size = int((_get_cpu_cache_info(0, "size")).replace("K", ""))
+                return d_cache_size * 1024
+            except ValueError:
+                return _get_cpu_cache_info(0, "size")
+
+        
+        elif cache_type.lower() == 'i': # Level 1 instruction cache in byte
+            try:
+                i_cache_size = int((_get_cpu_cache_info(1, "size")).replace("K", ""))
+                return i_cache_size * 1024
+            except ValueError:
+                return _get_cpu_cache_info(1, "size")
+    
         else:
             return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
         
     except AttributeError:
         return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
 
+
 def cpu_l2c():
-    # return cpu Level 2 cache
-    return _get_cpu_cache_level(2, "Cache Level 2")
+    # return cpu Level 2 cache in byte
+    try:
+        cache_size = int((_get_cpu_cache_info(2, "size")).replace("K", ""))
+        return cache_size * 1024
+    except ValueError:
+        return _get_cpu_cache_info(2, "size")
+        
 
 def cpu_l3c():
-    # return cpu Level 3 cache
-    return _get_cpu_cache_level(3, "Cache Level 3")
+    # return cpu Level 3 cache in byte
+    try:
+        cache_size = int((_get_cpu_cache_info(3, "size")).replace("K", ""))
+        return cache_size * 1024
+    except ValueError:
+        return _get_cpu_cache_info(3, "size")
+    
