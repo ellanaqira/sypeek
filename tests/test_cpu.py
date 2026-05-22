@@ -39,10 +39,7 @@ class _Mocked_Cpu_Func:
 
     def _mock_cpu_get_data_from_cpuinfo(self, mocker_plugin):
         mocker_plugin.patch("sypeek.cpu._get_cpu_data_from_cpuinfo").return_value = self.mocked_value
-
-    def _mock_cpu_cache_level(self, mocker_plugin):
-        mocker_plugin.patch("sypeek.cpu._get_cpu_cache_level").return_value = self.mocked_value
-
+        
 
 
 # _get_cpu_data_from_cpuinfo function ==============================================================
@@ -309,7 +306,7 @@ def test_wrong_keyword_cpu_temperature():
 # return _get_level_cache exception
 def _return_cache_level_exception(order: int, keyword_error: str):
     with pytest.raises(cpu.CPUInfoError) as excinfo:
-        cpu._get_cpu_cache_level(order, keyword_error)
+        cpu._get_cpu_cache_info(order, keyword_error)
     assert excinfo.value.message == f"Couldn't get cpu '{keyword_error}' information"
 
 
@@ -317,8 +314,8 @@ def _return_cache_level_exception(order: int, keyword_error: str):
 # Get CPU Cache Level 1 Test
 def test_cpu_cache_level1(mocker):
     mock_cpu_cache_level: int = 45555
+    mocker.patch("sypeek.cpu.cpu_l1c", return_value = mock_cpu_cache_level)
 
-    _Mocked_Cpu_Func(mock_cpu_cache_level)._mock_cpu_cache_level(mocker)
     assert cpu.cpu_l1c('d') == mock_cpu_cache_level
     assert cpu.cpu_l1c('D') == mock_cpu_cache_level
     assert cpu.cpu_l1c('i') == mock_cpu_cache_level
@@ -341,22 +338,22 @@ def mock_cpu_cache_l1_instruction():
 
 # Get CPU Cache Level 2 Test
 def test_cpu_cache_level2(mocker):
-    mock_cpu_cache_level: int = 45555
-    _Mocked_Cpu_Func(mock_cpu_cache_level)._mock_cpu_cache_level(mocker)
+    mock_cpu_cache_level = 45555
+    mocker.patch("sypeek.cpu.cpu_l2c", return_value = mock_cpu_cache_level)
     assert cpu.cpu_l2c() == mock_cpu_cache_level
 
 # return an exception 
-def mock_cpu_cache_level2():
+def mock_cpu_cachinfoel2():
     _return_cache_level_exception(2, "Cache Level 2")
 
 
 
 # Get CPU Cache Level 3 Test
 def test_cpu_cache_level3(mocker):
-    mock_cpu_cache_level: int = 45555
-    _Mocked_Cpu_Func(mock_cpu_cache_level)._mock_cpu_cache_level(mocker)
+    mock_cpu_cache_level = 45555
+    mocker.patch("sypeek.cpu.cpu_l3c", return_value = mock_cpu_cache_level)
     assert cpu.cpu_l3c() == mock_cpu_cache_level
 
 # return an exception 
-def mock_cpu_cache_level2():
+def mock_cpu_cachinfoel2():
     _return_cache_level_exception(3, "Cache Level 3")
