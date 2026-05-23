@@ -270,3 +270,24 @@ def cpu_l3c():
     # return cpu Level 3 cache in byte
     cache_size = int((_get_cpu_cache_info(3, "size", "L3 Cache")).replace("K", ""))
     return cache_size * 1024
+
+
+# cache level way
+def cpu_l1c_way(cache_type: str):
+    _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
+
+    try:
+        if cache_type.lower() == 'd':    
+            return int(_get_cpu_cache_info(0, "ways_of_associativity", "L1 Data Way"))
+        elif cache_type.lower() == 'i':
+            return int(_get_cpu_cache_info(1, "ways_of_associativity", "L1 Inst Way"))
+        else:
+            return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
+    except AttributeError:
+        return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
+
+def cpu_l2c_way():
+    return int(_get_cpu_cache_info(2, "ways_of_associativity", "L2 Way"))
+
+def cpu_l3c_way():
+    return int(_get_cpu_cache_info(3, "ways_of_associativity", "L3 Way"))
