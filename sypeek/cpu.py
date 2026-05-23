@@ -217,7 +217,7 @@ def cpu_temp(scale: str):
 
 # _get_cpu_cache_level function ====================================================================
 
-def _get_cpu_cache_info(num_of_index_folder: int, keyword: str):
+def _get_cpu_cache_info(num_of_index_folder: int, keyword: str, keyword_error: str):
     try:
         path_folder: str = f"/sys/devices/system/cpu/cpu0/cache/index{num_of_index_folder}"
         level_cache_dict = {}
@@ -232,9 +232,12 @@ def _get_cpu_cache_info(num_of_index_folder: int, keyword: str):
                         level_cache_dict[key] = value
 
     except FileNotFoundError:
-        _return_cpu_error("Cache Level")
+        _return_cpu_error(keyword_error)
     else:
-        return level_cache_dict[keyword]
+        try:
+            return level_cache_dict[keyword]
+        except KeyError:
+            return _return_cpu_error(keyword_error)
     
 
 # functions that rely on _get_cpu_cache_info function
@@ -243,20 +246,13 @@ def cpu_l1c(cache_type: str):
 
     try:
         if cache_type.lower() == 'd': # Level 1 data cache in byte
-            try:
-                d_cache_size = int((_get_cpu_cache_info(0, "size")).replace("K", ""))
-                return d_cache_size * 1024
-            except ValueError:
-                return _get_cpu_cache_info(0, "size")
-
+            d_cache_size = int((_get_cpu_cache_info(0, "size", "L1 Cache Data")).replace("K", ""))
+            return d_cache_size * 1024
         
         elif cache_type.lower() == 'i': # Level 1 instruction cache in byte
-            try:
-                i_cache_size = int((_get_cpu_cache_info(1, "size")).replace("K", ""))
-                return i_cache_size * 1024
-            except ValueError:
-                return _get_cpu_cache_info(1, "size")
-    
+            i_cache_size = int((_get_cpu_cache_info(1, "size", "L1 Cache Inst")).replace("K", ""))
+            return i_cache_size * 1024
+
         else:
             return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
         
@@ -266,18 +262,11 @@ def cpu_l1c(cache_type: str):
 
 def cpu_l2c():
     # return cpu Level 2 cache in byte
-    try:
-        cache_size = int((_get_cpu_cache_info(2, "size")).replace("K", ""))
-        return cache_size * 1024
-    except ValueError:
-        return _get_cpu_cache_info(2, "size")
+    cache_size = int((_get_cpu_cache_info(2, "size", "L2 Cache")).replace("K", ""))
+    return cache_size * 1024
         
 
 def cpu_l3c():
     # return cpu Level 3 cache in byte
-    try:
-        cache_size = int((_get_cpu_cache_info(3, "size")).replace("K", ""))
-        return cache_size * 1024
-    except ValueError:
-        return _get_cpu_cache_info(3, "size")
-    
+    cache_size = int((_get_cpu_cache_info(3, "size", "L3 Cache")).replace("K", ""))
+    return cache_size * 1024
