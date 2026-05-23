@@ -291,3 +291,25 @@ def cpu_l2c_way():
 
 def cpu_l3c_way():
     return int(_get_cpu_cache_info(3, "ways_of_associativity", "L3 Way"))
+
+
+# cache level line size
+def cpu_l1c_line(cache_type: str):
+    _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
+
+    try:
+        if cache_type.lower() == 'd':    
+            return int(_get_cpu_cache_info(0, "coherency_line_size", "L1 Data Line_Size"))
+        elif cache_type.lower() == 'i':
+            return int(_get_cpu_cache_info(1, "coherency_line_size", "L1 Inst Line_Size"))
+        else:
+            return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
+    except AttributeError:
+        return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
+    
+def cpu_l2c_line():
+    return int(_get_cpu_cache_info(2, "coherency_line_size", "L2 Line_Size"))
+
+def cpu_l3c_line():
+    return int(_get_cpu_cache_info(3, "coherency_line_size", "L3_Line_Size"))
+
