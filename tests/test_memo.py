@@ -17,13 +17,6 @@ class _Return_Notfile_Exception_Memo:
                 memory._get_memo_data_meminfo(self.keyword, self.keyword_error)
             assert excinfo.value.message == self.exception_msg
 
-    # simulate if the 'free' command doesn't exist so it returns an exception
-    def _notfile_free_exception(self):
-        with patch("sypeek.memory._get_memo_data_free", side_effect=memory.MemoInfoError(self.exception_msg)):
-            with pytest.raises(memory.MemoInfoError) as excinfo:
-                memory._get_memo_data_free(self.keyword, self.keyword_error)
-            assert excinfo.value.message == self.exception_msg
-
 
 
 class _Return_Keyword_Exception_Memo:
@@ -37,26 +30,16 @@ class _Return_Keyword_Exception_Memo:
             memory._get_memo_data_meminfo("invalid_keyword", self.keyword_error)
         assert excinfo.value.message == self.exception_msg
 
-    # simulate if the keyword from free command doesn't exist so it returns an exception
-    def _free_keyword_exeption(self):
-        with pytest.raises(memory.MemoInfoError) as excinfo:
-            memory._get_memo_data_free("invalid_keyword", self.keyword_error)
-        assert excinfo.value.message == self.exception_msg
-
 
 
 class _Mock_Function:
     # mock the return value
     def __init__(self):
-        self.mocked_value: int = 1999999.999
+        self.mocked_value: float = 1999999.999
 
     def _mock_meminfo_func(self, mocker_plugin):
         mock_meminfo_func = mocker_plugin.patch("sypeek.memory._get_memo_data_meminfo")
         mock_meminfo_func.return_value = self.mocked_value
-
-    def _mock_free_func(self, mocker_plugin):
-        mock_free_func = mocker_plugin.patch("sypeek.memory._get_memo_data_free")
-        mock_free_func.return_value = self.mocked_value
 
 
 
@@ -100,14 +83,16 @@ def test_keyword_exception_mem_available():
 
 # used memory
 def test_mock_mem_used(mocker):
-    _Mock_Function()._mock_free_func(mocker)
-    assert memory.mem_used() == _Mock_Function().mocked_value
+    mocked_value: float = 1999999.999
+    mock_meminfo_func = mocker.patch("sypeek.memory.mem_used")
+    mock_meminfo_func.return_value = mocked_value
+    assert memory.mem_used() == mocked_value
 
 def test_notfile_exception_mem_used():
-    _Return_Notfile_Exception_Memo("used", "Used Memory")._notfile_free_exception()
+    _Return_Notfile_Exception_Memo("used", "Used Memory")._notfile_meminfo_exception()
 
 def test_keyword_exception_mem_used():
-    _Return_Keyword_Exception_Memo("Used Memory")._free_keyword_exeption()
+    _Return_Keyword_Exception_Memo("Used Memory")._meminfo_keyword_exeption()
 
 
 
