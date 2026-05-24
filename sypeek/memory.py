@@ -1,6 +1,3 @@
-import subprocess
-
-
 class MemoInfoError(Exception):
     """
     Exception raised and displays an error message
@@ -49,34 +46,6 @@ def _get_memo_data_meminfo(keyword: str, keyword_error: str):
 
 
 
-def _get_memo_data_free(keyword: str, keyword_error: str):
-    mem_data_list = []
-    mem_data_dict = {}
-
-    try:
-        mem_datas = subprocess.run("free", capture_output=True, text=True)
-    except FileNotFoundError:
-        _return_memo_error(keyword_error)
-
-    else:
-        mem_datas = mem_datas.stdout.split('\n')
-
-        for mem_data in mem_datas:
-            mem_data_list.append(mem_data.split())
-        
-        del mem_data_list[1][0], mem_data_list[2]
-
-        for key, value in zip(mem_data_list[0], mem_data_list[1]):
-            mem_data_dict[key] = value
-        
-        # return value in Kilobytes
-        try:
-            return int(mem_data_dict[keyword]) * 1.024
-        except KeyError:
-            _return_memo_error(keyword_error)
-    
-
-
 # General Memory ===============================================
 
 def mem_total():
@@ -93,7 +62,13 @@ def mem_available():
 
 def mem_used():
     # return used memory
-    return _get_memo_data_free("used", "Used Memory")
+    try:
+        total_mem = _get_memo_data_meminfo("MemTotal", None)
+        avail_mem = _get_memo_data_meminfo("MemAvailable", None)
+    except MemoInfoError:
+        raise _return_memo_error("Used Memory")
+    else:
+        return total_mem - avail_mem
 
 
 
