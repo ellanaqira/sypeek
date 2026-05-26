@@ -30,17 +30,9 @@ def _get_memo_data_meminfo(keyword: str, keyword_error: str):
         _return_memo_error(keyword_error)
     
     else:
-        """
-        1 KiB = 1024 bytes
-        1 KB  = 1000 bytes
-
-        based on the information above
-        1 KiB = (1024 / 1000) KB
-        1 KiB = 1.024 KB
-        """
-        # return value in Kilobytes
+        # return value in bytes
         try:
-            return int(data_dict[keyword]) * 1.024
+            return int(data_dict[keyword])
         except KeyError:
             _return_memo_error(keyword_error)
 
@@ -174,11 +166,9 @@ def mem_kreclaimable():
     # return the value of kernel allocated memory, reclaimable under memory pressure
     return _get_memo_data_meminfo("KReclaimable", "Reclaimable Memory")
 
-
 def mem_slab():
     # return total memory used by kernel slab caches
     return _get_memo_data_meminfo("Slab", "Memory Slab")
-
 
 def mem_sreclaimable():
     # return the amount of slab memory part that can be reclaimed under memory pressure
