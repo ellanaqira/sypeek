@@ -6,11 +6,11 @@ Python library for monitor CPU, Memory, Motherboard, Operating System, and BIOS 
 
 ## Usage
 ```python
-from sypeek import *
+from sypeek import cpu, memory
 
 # return cpu name and cpu temperature in celcius
 print(f"=====(CPU info)=====")
-print(f"name : {cpu.cpu_name()}")
+print(f"name : {cpu.cpu_model_name()}")
 print(f"temp : {cpu.cpu_temp('c')} °C")
 
 # return total memory and used memory
