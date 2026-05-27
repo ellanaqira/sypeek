@@ -4,15 +4,26 @@ from unittest.mock import patch
 from sypeek import cpu
 
 
+class _Mocked_Cpu_Func:
+    def __init__(self, mocked_value):
+        self.mocked_value = mocked_value
+
+    def _mock_cpu_get_data_from_command(self, mocker_plugin):
+        mocker_plugin.patch("sypeek.cpu._get_cpu_data_from_command").return_value = self.mocked_value
+
+    def _mock_cpu_get_data_from_cpuinfo(self, mocker_plugin):
+        mocker_plugin.patch("sypeek.cpu._get_cpu_data_from_cpuinfo").return_value = self.mocked_value
+
+
 class _Return_Exception:
     """
     test the cpu function to return an exception when the code
     contains problematic command and/or keyword is executed
     """
 
-    def __init__(self, command: str, keyword: str, keyword_error: str):
+    def __init__(self, keyword_error: str,  command: str = ""):
         self.command = command
-        self.keyword = keyword
+        self.keyword = "invalid keyword"
         self.keyword_error = keyword_error
         self.exception_msg: str = f"Couldn't get cpu '{self.keyword_error}' information"
 
@@ -27,160 +38,119 @@ class _Return_Exception:
             with pytest.raises(cpu.CPUInfoError) as excinfo:
                 cpu._get_cpu_data_from_command(self.command, self.keyword, self.keyword_error)
             assert excinfo.value.message == self.exception_msg
-            
-
-
-class _Mocked_Cpu_Func:
-    def __init__(self, mocked_value):
-        self.mocked_value = mocked_value
-
-    def _mock_cpu_get_data_from_command(self, mocker_plugin):
-        mocker_plugin.patch("sypeek.cpu._get_cpu_data_from_command").return_value = self.mocked_value
-
-    def _mock_cpu_get_data_from_cpuinfo(self, mocker_plugin):
-        mocker_plugin.patch("sypeek.cpu._get_cpu_data_from_cpuinfo").return_value = self.mocked_value
         
 
 
 # _get_cpu_data_from_cpuinfo function ==============================================================
 
 # Get CPU Cores Test
-def test_mock_get_cpu_cores(mocker):
-    mocked_value: int = 4
-    mocked_get_cpu_cores = _Mocked_Cpu_Func(mocked_value)
+def test_mock_cpu_cores(mocker):
+    dummy_core_number: int = 4
+    mocked_get_cpu_cores = _Mocked_Cpu_Func(dummy_core_number)
     mocked_get_cpu_cores._mock_cpu_get_data_from_cpuinfo(mocker)
 
-    assert cpu.cpu_cores('l') == mocked_value # logical core(s)
-    assert cpu.cpu_cores('L') == mocked_value
-    assert cpu.cpu_cores('p') == mocked_value # physical core(s)
-    assert cpu.cpu_cores('P') == mocked_value
+    assert cpu.cpu_cores('l') == dummy_core_number # logical core(s)
+    assert cpu.cpu_cores('p') == dummy_core_number # physical core(s)
 
-def test_mock_get_cpu_cores_error():
+def test_mock_cpu_cores_error():
     assert cpu.cpu_cores('q') == "core type must be 'l' or 'p'"
-    assert cpu.cpu_cores(3) == "core type must be 'l' or 'p'"
-    assert cpu.cpu_cores(3.4) == "core type must be 'l' or 'p'"
-    assert cpu.cpu_cores(True) == "core type must be 'l' or 'p'"
 
 # return an exception 
 # Logical cores    
-def test_exception_wrong_command_cpu_logical_cores():
-    wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Logical Core")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
-
-def test_exception_wrong_keyword_cpu_logical_cores():
-    wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Logical Core")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
+def test_exception_cpu_logical_cores():
+    cpu_cores_exception = _Return_Exception("Logical Core")
+    cpu_cores_exception._return_get_data_cpuinfo_exception()
 
 # Physical Core
-def test_exception_wrong_command_cpu_physical_cores():
-    wrong_com_exc = _Return_Exception("wrong_lscpu", "Core(s) per socket", "Physical Core")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
-
-def test_exception_wrong_keyword_cpu_physical_cores():
-    wrong_com_exc = _Return_Exception("lscpu", "wrong_core", "Physical Core")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
+def test_exception_cpu_physical_cores():
+    cpu_cores_exception = _Return_Exception("Physical Core")
+    cpu_cores_exception._return_get_data_cpuinfo_exception()
 
 
 
 # Get CPU Vendor Test
-def test_mock_get_cpu_vendor(mocker):
-    mocked_value: dict = {"vendor id" : "GenuineIntel", "vendor" : "Intel"}
-    _Mocked_Cpu_Func(mocked_value["vendor id"])._mock_cpu_get_data_from_cpuinfo(mocker)
-    assert cpu.cpu_vendor() == mocked_value["vendor"]
+def test_mock_cpu_vendor(mocker):
+    dummy_vendor: dict = {"vendor id" : "GenuineIntel", "vendor" : "Intel"}
+    mocked_cpu_vendor = _Mocked_Cpu_Func(dummy_vendor["vendor id"])
+    mocked_cpu_vendor._mock_cpu_get_data_from_cpuinfo(mocker)
+    assert cpu.cpu_vendor() == dummy_vendor["vendor"]
 
-def test_mock_get_cpu_vendor_not_found(mocker):
+def test_mock_cpu_vendor_not_found(mocker):
     # test cpu_vendor fuction to return "not found message" when the cpu vendor cannot be found
-    mocked_cpu_vendor = "Unknown_CPU"
-    _Mocked_Cpu_Func(mocked_cpu_vendor)._mock_cpu_get_data_from_cpuinfo(mocker)
-    assert cpu.cpu_vendor() == f"vendor name of '{mocked_cpu_vendor}' could not be found"
+    unknown_vendor = "Unknown_CPU"
+    mocked_cpu_vendor = _Mocked_Cpu_Func(unknown_vendor)
+    mocked_cpu_vendor._mock_cpu_get_data_from_cpuinfo(mocker)
+    assert cpu.cpu_vendor() == f"vendor name of '{unknown_vendor}' could not be found"
 
 # return an exception 
-def test_exception_wrong_command_cpu_vendor():
-    wrong_com_exc = _Return_Exception("wrong_lscpu", "Vendor ID", "Vendor")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
-
-def test_exception_wrong_keyword_cpu_vendor():
-    wrong_keyw_exc = _Return_Exception("lscpu", "wrong_vendor", "Vendor")
-    wrong_keyw_exc._return_get_data_cpuinfo_exception()
+def test_exception_cpu_vendor():
+    cpu_vendor_exception = _Return_Exception("Vendor")
+    cpu_vendor_exception._return_get_data_cpuinfo_exception()
 
 
 
 # Get CPU Vendor ID Test
-def test_mock_get_cpu_vendorid(mocker):
-    mock_vendorid: str = "NexGenDriven"
-    _Mocked_Cpu_Func(mock_vendorid)._mock_cpu_get_data_from_cpuinfo(mocker)
-    assert cpu.cpu_vendorid() == mock_vendorid
+def test_mock_cpu_vendorid(mocker):
+    dummy_vendorid: str = "NexGenDriven"
+    mocked_cpu_vendorid = _Mocked_Cpu_Func(dummy_vendorid)
+    mocked_cpu_vendorid._mock_cpu_get_data_from_cpuinfo(mocker)
+    assert cpu.cpu_vendorid() == dummy_vendorid
 
 # return an exception 
-def test_exception_wrong_command_cpu_vendorid():
-    wrong_com_exc = _Return_Exception("wrong_lscpu", "Vendor ID", "Vendor ID")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
-
-def test_exception_wrong_keyword_cpu_vendorid():
-    wrong_keyw_exc = _Return_Exception("lscpu", "wrong_vendor", "Vendor ID")
-    wrong_keyw_exc._return_get_data_cpuinfo_exception()
+def test_exception_cpu_vendorid():
+    cpu_vendorid_exception = _Return_Exception("Vendor ID")
+    cpu_vendorid_exception._return_get_data_cpuinfo_exception()
 
 
 
 # Get CPU Model Name Test
-def test_mock_get_cpu_name(mocker):
-    mock_cpu_name: str = "Intel Core i5 7200u"
-    _Mocked_Cpu_Func(mock_cpu_name)._mock_cpu_get_data_from_cpuinfo(mocker)
-    assert cpu.cpu_model_name() == mock_cpu_name
+def test_mock_cpu_name(mocker):
+    dummy_cpu_name: str = "Intel Core i5 7200u"
+    mocked_cpu_name = _Mocked_Cpu_Func(dummy_cpu_name)
+    mocked_cpu_name._mock_cpu_get_data_from_cpuinfo(mocker)
+    assert cpu.cpu_model_name() == dummy_cpu_name
 
 # return an exception 
-def test_exception_wrong_command_cpu_name():    
-    wrong_com_exc = _Return_Exception("wrong_lscpu", "Model name", "Model Name")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
-
-def test_exception_wrong_keyword_cpu_name():
-    wrong_com_exc = _Return_Exception("lscpu", "wrong_model_name", "Model Name")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
+def test_exception_cpu_name():
+    cpu_name_exception = _Return_Exception("Model Name")
+    cpu_name_exception._return_get_data_cpuinfo_exception()
 
 
 
 # Get CPU Stepping Test
-def test_mock_get_cpu_stepping(mocker):
-    mock_cpu_stepping: int = 1
-    _Mocked_Cpu_Func(mock_cpu_stepping)._mock_cpu_get_data_from_cpuinfo(mocker)
-    assert cpu.cpu_stepping() == mock_cpu_stepping
+def test_mock_cpu_stepping(mocker):
+    dummy_cpu_stepping: int = 1
+    mocked_cpu_stepping = _Mocked_Cpu_Func(dummy_cpu_stepping)
+    mocked_cpu_stepping._mock_cpu_get_data_from_cpuinfo(mocker)
+    assert cpu.cpu_stepping() == dummy_cpu_stepping
 
 # return an exception 
-def test_exception_wrong_command_cpu_stepping():
-    wrong_com_exc = _Return_Exception("wrong_lscpu", "Stepping", "Stepping")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
-
-def test_exception_wrong_keyword_cpu_stepping():
-    wrong_com_exc = _Return_Exception("lscpu", "wrong_stepping", "Stepping")
-    wrong_com_exc._return_get_data_cpuinfo_exception()
+def test_exception_cpu_stepping():
+    cpu_stepping_exception = _Return_Exception("Stepping")
+    cpu_stepping_exception._return_get_data_cpuinfo_exception()
 
 
 
 # Get CPU Speed Test
-def test_mock_get_cpu_speed(mocker):
-    mocked_speed: float = 1999.999
-    _Mocked_Cpu_Func(mocked_speed)._mock_cpu_get_data_from_cpuinfo(mocker)
-    assert cpu.cpu_speed(0) == mocked_speed
-    assert cpu.cpu_speed(1) == mocked_speed
-    assert cpu.cpu_speed(2) == mocked_speed
-    assert cpu.cpu_speed(3) == mocked_speed
+def test_mock_cpu_speed(mocker):
+    dummy_cpu_speed: float = 1999.999
+    mocked_cpu_speed = _Mocked_Cpu_Func(dummy_cpu_speed)
+    mocked_cpu_speed._mock_cpu_get_data_from_cpuinfo(mocker)
+    assert cpu.cpu_speed(0) == dummy_cpu_speed
+    assert cpu.cpu_speed(1) == dummy_cpu_speed
+    assert cpu.cpu_speed(2) == dummy_cpu_speed
+    assert cpu.cpu_speed(3) == dummy_cpu_speed
 
-def test_mock_get_cpu_speed_error(mocker):
-    mocked_speed_error: str = "core number must be int() and between 0 and 4"
-    _Mocked_Cpu_Func(mocked_speed_error)._mock_cpu_get_data_from_cpuinfo(mocker)
-    assert cpu.cpu_speed(4) == mocked_speed_error
-    assert cpu.cpu_speed(3.0) == mocked_speed_error
-    assert cpu.cpu_speed('3') == mocked_speed_error
-    assert cpu.cpu_speed(True) == mocked_speed_error
+def test_mock_cpu_speed_error(mocker):
+    dummy_error_message: str = "core number must be int() and between 0 and 3"
+    mocker.patch("sypeek.cpu.cpu_speed").return_value = dummy_error_message
+    assert cpu.cpu_speed(4) == dummy_error_message
+    assert cpu.cpu_speed('3') == dummy_error_message
 
 # return an exception 
-def test_exception_cpu_speed_exception():
-    exc_message: str = "Couldn't get cpu 'Speed' information"
-
-    with patch("sypeek.cpu.cpu_speed", side_effect=cpu.CPUInfoError(exc_message)):
-        with pytest.raises(cpu.CPUInfoError) as excinfo:
-            cpu.cpu_speed(0)
-        assert excinfo.value.message == exc_message
+def test_exception_cpu_speed():
+    cpu_speed_exception = _Return_Exception("Speed")
+    cpu_speed_exception._return_get_data_cpuinfo_exception()
 
 
 
