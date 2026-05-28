@@ -63,7 +63,7 @@ def _get_cpu_data_from_cpuinfo(keyword: str, keyword_error: str, core_num: int =
         else:
             try:
                 if cpu_list[core_num].get(keyword):
-                    return float(cpu_list[core_num].get(keyword))
+                    return cpu_list[core_num].get(keyword)
                 
                 else:
                     _return_cpu_error(keyword_error)
@@ -149,7 +149,7 @@ def cpu_stepping():
 
 def cpu_speed(core_num: int):
     # return cpu speed
-    return _get_cpu_data_from_cpuinfo("cpu MHz", "Speed", core_num)
+    return float(_get_cpu_data_from_cpuinfo("cpu MHz", "Speed", core_num))
 
 
 
