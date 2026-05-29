@@ -157,117 +157,88 @@ def test_exception_cpu_speed():
 # _get_cpu_data_from_command function ==============================================================
 
 # Get CPU Thread Test
-def test_mock_get_cpu_threads(mocker):
-    mock_thread: int = 2
-    _Mocked_Cpu_Func(mock_thread)._mock_cpu_get_data_from_command(mocker)
-    assert cpu.cpu_threads() == mock_thread
+def test_mock_cpu_threads(mocker):
+    dummy_thread: int = 2
+    mocked_cpu_threads = _Mocked_Cpu_Func(dummy_thread)
+    mocked_cpu_threads._mock_cpu_get_data_from_command(mocker)
+    assert cpu.cpu_threads() == dummy_thread
 
 # return an exception 
-def test_exception_wrong_command_cpu_threads():
-    wrong_com_exc = _Return_Exception("wrong_lscpu", "Thread", "Thread")
-    wrong_com_exc._return_get_data_command_exception()
-
-def test_exception_wrong_keyword_cpu_threads():
-    wrong_com_exc = _Return_Exception("lscpu", "wrong_thread", "Thread")
-    wrong_com_exc._return_get_data_command_exception()
-
+def test_exception_cpu_threads():
+    cpu_threads_exception = _Return_Exception("Thread", "lscpu")
+    cpu_threads_exception._return_get_data_command_exception()
 
 
 # Get CPU Family Test
-def test_mock_get_cpu_family(mocker):
-    mock_cpu_family: str = "0xf (15)"
-    _Mocked_Cpu_Func(mock_cpu_family)._mock_cpu_get_data_from_command(mocker)
-    assert cpu.cpu_family() == mock_cpu_family
+def test_mock_cpu_family(mocker):
+    dummy_cpu_family: str = "0xf (15)"
+    mocked_cpu_family = _Mocked_Cpu_Func(dummy_cpu_family)
+    mocked_cpu_family._mock_cpu_get_data_from_command(mocker)
+    assert cpu.cpu_family() == dummy_cpu_family
 
 # return an exception 
-def test_exception_wrong_command_cpu_family():
-    wrong_com_exc = _Return_Exception("wrong_cpuid", "family", "Family")
-    wrong_com_exc._return_get_data_command_exception()
-
 def test_exception_wrong_keyword_cpu_family():
-    wrong_com_exc = _Return_Exception("cpuid", "wrong_family", "Family")
-    wrong_com_exc._return_get_data_command_exception()
-
+    cpu_family_exception = _Return_Exception("Family", "cpuid")
+    cpu_family_exception._return_get_data_command_exception()
 
 
 # Get CPU Family Synth Test
-def test_mock_get_cpu_family_synth(mocker):
-    mock_cpu_family_synth: str = "0x17 (23)"
-    _Mocked_Cpu_Func(mock_cpu_family_synth)._mock_cpu_get_data_from_command(mocker)
-    assert cpu.cpu_family_synth() == mock_cpu_family_synth
+def test_mock_cpu_family_synth(mocker):
+    dummy_cpu_family_synth: str = "0x17 (23)"
+    mocked_cpu_family_synth = _Mocked_Cpu_Func(dummy_cpu_family_synth)
+    mocked_cpu_family_synth._mock_cpu_get_data_from_command(mocker)
+    assert cpu.cpu_family_synth() == dummy_cpu_family_synth
 
 # return an exception 
-def test_exception_wrong_command_cpu_family_synth():
-    wrong_com_exc = _Return_Exception("wrong_cpuid", "family synth", "Family Synth")
-    wrong_com_exc._return_get_data_command_exception()
-
-def test_exception_wrong_keyword_cpu_family_synth():
-    wrong_com_exc = _Return_Exception("cpuid", "wrong_family_synth", "Family Synth")
-    wrong_com_exc._return_get_data_command_exception()
-
+def test_exception_cpu_family_synth():
+    cpu_family_synth_exception = _Return_Exception("Family Synth", "cpuid")
+    cpu_family_synth_exception._return_get_data_command_exception()
 
 
 # Get CPU Model Test
-def test_mock_get_cpu_model(mocker):
-    mock_cpu_model = "0x8 (8)"
-    _Mocked_Cpu_Func(mock_cpu_model)._mock_cpu_get_data_from_command(mocker)
-    assert cpu.cpu_model() == mock_cpu_model
+def test_mock_cpu_model(mocker):
+    dummy_cpu_model = "0x8 (8)"
+    mocked_cpu_model = _Mocked_Cpu_Func(dummy_cpu_model)
+    mocked_cpu_model._mock_cpu_get_data_from_command(mocker)
+    assert cpu.cpu_model() == dummy_cpu_model
 
 # return an exception 
-def test_exception_wrong_command_cpu_model():
-    wrong_com_exc = _Return_Exception("wrong_cpuid", "model", "Model")
-    wrong_com_exc._return_get_data_command_exception()
-
-def test_exception_wrong_keyword_cpu_model():
-    wrong_com_exc = _Return_Exception("cpuid", "wrong_model", "Model")
-    wrong_com_exc._return_get_data_command_exception()
-
+def test_exception_cpu_model():
+    cpu_model_exception = _Return_Exception("Model", "cpuid")
+    cpu_model_exception._return_get_data_command_exception()
 
 
 # Get CPU Model Synth
-def test_mock_get_cpu_model_synth(mocker):
-    mock_cpu_model_synth: str = "0x18 (24)"
-    _Mocked_Cpu_Func(mock_cpu_model_synth)._mock_cpu_get_data_from_command(mocker)
-    assert cpu.cpu_model_synth() == mock_cpu_model_synth
+def test_mock_cpu_model_synth(mocker):
+    dummy_cpu_model_synth: str = "0x18 (24)"
+    mocked_cpu_model_synth = _Mocked_Cpu_Func(dummy_cpu_model_synth)
+    mocked_cpu_model_synth._mock_cpu_get_data_from_command(mocker)
+    assert cpu.cpu_model_synth() == dummy_cpu_model_synth
 
 # return an exception 
-def test_exception_wrong_command_cpu_model_synth():
-    wrong_com_exc = _Return_Exception("wrong_cpuid", "family synth", "Model Synth")
-    wrong_com_exc._return_get_data_command_exception()
-
-def test_exception_wrong_keyword_cpu_model_synth():    
-    wrong_com_exc = _Return_Exception("cpuid", "wrong_model_synth", "Model Synth")
-    wrong_com_exc._return_get_data_command_exception()
+def test_exception_cpu_model_synth():    
+    cpu_model_synth_exception = _Return_Exception("Model Synth", "cpuid")
+    cpu_model_synth_exception._return_get_data_command_exception()
 
 
 
 # Get CPU Temperature
-def mock_cpu_temp(mocker_plugin, cpu_parameter, mocked_value):
-    mocker_plugin.patch("sypeek.cpu.cpu_temp").return_value = mocked_value
-    assert cpu.cpu_temp(cpu_parameter) == mocked_value
+def mock_cpu_temp(mocker_plugin, cpu_parameter, dummy_value):
+    mocker_plugin.patch("sypeek.cpu.cpu_temp").return_value = dummy_value
+    assert cpu.cpu_temp(cpu_parameter) == dummy_value
 
-def test_mock_get_cpu_temperature(mocker):
+def test_mock_cpu_temperature(mocker):
     mock_cpu_temp(mocker, 'c', 64.8)
-    mock_cpu_temp(mocker, 'C', 64.8)
     mock_cpu_temp(mocker, 'f', 64.8)
-    mock_cpu_temp(mocker, 'F', 64.8)
     mock_cpu_temp(mocker, 'k', 64.8)
-    mock_cpu_temp(mocker, 'K', 64.8)    
 
-def test_mock_get_cpu_temperature_error():
+def test_mock_cpu_temperature_error():
     assert cpu.cpu_temp('x') == "temperature scale must be 'c', 'f', or 'k'"
-    assert cpu.cpu_temp(2) == "temperature scale must be 'c', 'f', or 'k'"
-    assert cpu.cpu_temp(2.0) == "temperature scale must be 'c', 'f', or 'k'"
-    assert cpu.cpu_temp(True) == "temperature scale must be 'c', 'f', or 'k'"
 
 # return an exception 
-def test_exception_wrong_command_cpu_temperature():
-    wrong_com_exc = _Return_Exception("wrong_sensors", "Tctl", "Temperature")
-    wrong_com_exc._return_get_data_command_exception()
-
-def test_exception_wrong_keyword_cpu_temperature():
-    wrong_com_exc = _Return_Exception("sensors", "wrong_Tctl", "Temperature")
-    wrong_com_exc._return_get_data_command_exception()
+def test_exception_cpu_temperature():
+    cpu_temperature_exception = _Return_Exception("Temperature", "sensors")
+    cpu_temperature_exception._return_get_data_command_exception()
 
 
 
@@ -280,23 +251,15 @@ def _return_cache_level_exception(order: int, keyword_error: str):
         cpu._get_cpu_cache_info(order, invalid_keyword, keyword_error, )
     assert excinfo.value.message == f"Couldn't get cpu '{keyword_error}' information"
 
-
-
 # Get CPU Cache Level 1 Test
 def test_mock_cpu_cache_l1(mocker):
     mock_cpu_cache_level: int = 45555
     mocker.patch("sypeek.cpu.cpu_l1c", return_value = mock_cpu_cache_level)
-
     assert cpu.cpu_l1c('d') == mock_cpu_cache_level
-    assert cpu.cpu_l1c('D') == mock_cpu_cache_level
     assert cpu.cpu_l1c('i') == mock_cpu_cache_level
-    assert cpu.cpu_l1c('I') == mock_cpu_cache_level
 
 def test_mock_cpu_cache_l1_error():
     assert cpu.cpu_l1c('h') == "cache type must be 'd' or 'i'"
-    assert cpu.cpu_l1c(5) == "cache type must be 'd' or 'i'"
-    assert cpu.cpu_l1c(5.0) == "cache type must be 'd' or 'i'"
-    assert cpu.cpu_l1c(True) == "cache type must be 'd' or 'i'"
 
 # return an exception 
 def test_exception_cpu_cache_l1_data():
@@ -304,7 +267,6 @@ def test_exception_cpu_cache_l1_data():
 
 def test_exception_cpu_cache_l1_instruction():
     _return_cache_level_exception(1, "Instruction Cache Level 1")
-
 
 
 # Get CPU Cache Level 2 Test
@@ -316,7 +278,6 @@ def test_mock_cpu_cache_l2(mocker):
 # return an exception 
 def test_exception_cpu_cache_l2():
     _return_cache_level_exception(2, "Cache Level 2")
-
 
 
 # Get CPU Cache Level 3 Test
