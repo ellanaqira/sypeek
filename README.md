@@ -1,5 +1,7 @@
 # Sypeek
-Python library for monitor CPU, Memory, Motherboard, Operating System, and BIOS in Linux. 
+Python library for monitor CPU, Memory, Motherboard, Operating System, and BIOS in Linux.
+
+This Python library is very simple and easy to use, all you need to do to get information about CPU, Memory, Motherboard, Operating System, and BIOS is just call a function, and some other functions require you to add arguments. 
 
 ### - Note:
 <mark> This library is intended for Ubuntu-based Linux distributions.</mark> For other Linux-based distributions, it cannot be guaranteed that it will work properly.
