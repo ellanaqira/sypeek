@@ -1,2 +1,5 @@
-from sypeek import cpu
-from sypeek import memory
+from .bios import *
+from .board import *
+from .cpu import *
+from .memory import *
+from .opsy import *
