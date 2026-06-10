@@ -6,6 +6,16 @@ This Python library is very simple and easy to use, all you need to do to get in
 ### - Note:
 <mark> This library is intended for Ubuntu-based Linux distributions.</mark> For other Linux-based distributions, it cannot be guaranteed that it will work properly.
 
+## Documentation
+
+### ___ Bios ___________________________________________________
+`from sypek.bios import *` will give you available function inside of bios module that you can use to get information about your bios.
+
+`bios_vendor()` - return the vendor name of bios <br>
+`bios_date()` - return the date of the bios in "pretty" format <br>
+`bios_version()` - return the version of bios on your machine
+
+
 ## Usage
 ```python
 from sypeek import cpu, memory
