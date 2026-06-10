@@ -23,7 +23,7 @@ def _get_bios_info(file_name: str, keyword_error: str):
     
 
 def bios_vendor():
-    return _get_bios_info("bios_venor", "BIOS Vendor")
+    return _get_bios_info("bios_vendor", "BIOS Vendor")
 
 def bios_date():
     return _get_bios_info("bios_date", "BIOS Date")
