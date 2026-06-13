@@ -48,7 +48,7 @@ def mem_free():
     # return free memory
     return _get_memo_data_meminfo("MemFree", "Free Memory")
 
-def mem_available():
+def mem_avlbl():
     # return available memory
     return _get_memo_data_meminfo("MemAvailable", "Available Memory")
 
@@ -66,26 +66,26 @@ def mem_used():
 
 # Active Memory ================================================
 
-def mem_active():
+def mem_act():
     # return active memory recently
     return _get_memo_data_meminfo("Active", "Active Memory")
 
-def mem_inactive():
+def mem_inact():
     # return inactive memory
     return _get_memo_data_meminfo("Inactive", "Inactive Memory")
 
 
-def mem_active_anon():
+def mem_actanon():
     # return active memory (anon)
     return _get_memo_data_meminfo("Active(anon)", "Active Memory (anon)")
 
 
-def mem_inactive_anon():
+def mem_inactanon():
     # return active memory (anon)
     return _get_memo_data_meminfo("Inactive(anon)", "Inactive Memory (anon)")
 
 
-def mem_active_file():
+def mem_actfile():
     """
     The (file) means that the amount
     of memory is being used by cache.
@@ -94,7 +94,7 @@ def mem_active_file():
     return _get_memo_data_meminfo("Active(file)", "Active Memory (file)")
 
 
-def mem_inactive_file():
+def mem_inactfile():
     # return inactive memory (file)
     return _get_memo_data_meminfo("Inactive(file)", "Inactive Memory (file)")
 
@@ -120,15 +120,15 @@ def mem_cache():
 
 # Swap Memory ==================================================
 
-def mem_swap_total():
+def mem_swptotal():
     # return the total amount of swap space available in the system
     return _get_memo_data_meminfo("SwapTotal", "Total Swap Space")
 
-def mem_swap_free():
+def mem_swpfree():
     # return the value of unused swap space
     return _get_memo_data_meminfo("SwapFree", "Free Swap Space")
 
-def mem_swap_cache():
+def mem_swpcache():
     # return the value of recently used swap memory
     return _get_memo_data_meminfo("SwapCached", "Swap Cache")
 
@@ -136,7 +136,7 @@ def mem_swap_cache():
 
 # Writeback into the Disk ======================================
 
-def mem_writesback():
+def mem_wrbk():
     # return value of memory that is being written back at the moment
     return _get_memo_data_meminfo("Writeback", "Memory Write Back")
 
@@ -149,12 +149,12 @@ def mem_dirty():
 
 # Shared Memory ================================================
 
-def mem_shared():
+def mem_shr():
     # return the amount used by shared memory and the tmpfs filesystem
     return _get_memo_data_meminfo("Shmem", "Shared Memory")
 
 
-def mem_shared_hp():
+def mem_shrhp():
     # return the amount used by shared memory and the tmpfs filesystem with huge pages
     return _get_memo_data_meminfo("ShmemHugePages", "Shared Memory (Huge Pages)")
 
@@ -162,7 +162,7 @@ def mem_shared_hp():
 
 # Kernel Memory ================================================
 
-def mem_kreclaimable():
+def mem_krec():
     # return the value of kernel allocated memory, reclaimable under memory pressure
     return _get_memo_data_meminfo("KReclaimable", "Reclaimable Memory")
 
@@ -170,14 +170,14 @@ def mem_slab():
     # return total memory used by kernel slab caches
     return _get_memo_data_meminfo("Slab", "Memory Slab")
 
-def mem_sreclaimable():
+def mem_srec():
     # return the amount of slab memory part that can be reclaimed under memory pressure
     return _get_memo_data_meminfo("SReclaimable", "Reclaimable Memory Slab")
 
-def mem_sunreclaim():
+def mem_sunrec():
     # return the amount of slab memory part that cannot be reclaimed, even when the system is low on memory
     return _get_memo_data_meminfo("SUnreclaim", "Unclaimable Memory Slab")
 
-def mem_kernel_stack():
+def mem_kstack():
     # return the sum of all kernel stack memory
     return _get_memo_data_meminfo("KernelStack", "Kernel Stack Memory")
