@@ -24,7 +24,7 @@ def _get_memo_data_meminfo(keyword: str, keyword_error: str):
         with open("/proc/meminfo") as f:
             for line in f:
                 key, value = [x.strip().replace("kB", '').replace("kb", '') for x in line.split(':', 1)]
-                data_dict[key] = value
+                data_dict[key] = value.strip()
                 
     except FileNotFoundError:
         _return_memo_error(keyword_error)
