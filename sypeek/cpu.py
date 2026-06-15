@@ -46,7 +46,7 @@ def _get_cpu_data_from_cpuinfo(keyword: str, keyword_error: str, core_num: int =
                 cpu_list.append(cpu_dict)
 
     except FileNotFoundError:
-        return _return_cpu_error(keyword_error)
+        _return_cpu_error(keyword_error)
 
     else:
         _CORE_NUM_ERROR_MESSAGE = f"core number must be int() and between 0 and {len(cpu_list)-1}"
@@ -171,7 +171,7 @@ def _get_cpu_data_from_command(command:str, keyword:str, keyword_error: str):
                 except IndexError:
                     return line.split('=')[1].strip()
                 
-        return _return_cpu_error(keyword_error)
+        _return_cpu_error(keyword_error)
 
 
 # functions that rely on _get_cpu_data_from_command function
@@ -237,7 +237,7 @@ def _get_cpu_cache_info(num_of_index_folder: int, keyword: str, keyword_error: s
         try:
             return level_cache_dict[keyword]
         except KeyError:
-            return _return_cpu_error(keyword_error)
+            _return_cpu_error(keyword_error)
     
 
 # functions that rely on _get_cpu_cache_info function
