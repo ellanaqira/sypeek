@@ -34,7 +34,7 @@ class _VerticalList:
         return "\n".join(string_list)
     
 
-# static data (doesnt change)
+
 def get_cpudt_gnrl(keyword: str):
     """
     Gnrl means GeNeRaL, get general
@@ -45,7 +45,7 @@ def get_cpudt_gnrl(keyword: str):
     * flags (special keyword: str):
         - "--all" : return sorted list of data
         - "--raw" : return data in form of raw dictionary
-        - "--len" : returns the value of the amount of data  
+        - "--len" : returns the number of data  
     """
     try:
         data = subprocess.run(["cpuid"], capture_output=True, text=True)
@@ -57,15 +57,20 @@ def get_cpudt_gnrl(keyword: str):
         raw_cpu_data = data.stdout.splitlines()
         cpu_dict = {}
         cpu_list = []
-        cpu_list_sorted = []
+        formated_list = []
 
     # store data into cpu_dict variable
         for data in raw_cpu_data:
-            if ":" in data or "-" in data:
+            # if ":" in data or "---" in data:
+            #     continue
+
+            try:
+                key, value = data.split("=")
+            except ValueError:
                 continue
-            key, value = data.split("=")
-            key, value = key.strip().replace('"',''), value.strip().replace('"','')
-            cpu_dict[key] = value
+            else:
+                key, value = key.strip().replace('"',''), value.strip().replace('"','')
+                cpu_dict[key] = value
         
     # store unsorted data into cpu_list variable
         # get the longest key from cpu_dict variable
@@ -94,7 +99,7 @@ def get_cpudt_gnrl(keyword: str):
                 return cpu_dict[keyword]
         except KeyError:
             raise CPUInfoError(f"the data of '{keyword}' not available")
-        
+
 
 
 def get_cpudt_pcr(keyword: str, core_num: int = 0):
@@ -117,7 +122,7 @@ def get_cpudt_pcr(keyword: str, core_num: int = 0):
     * core_num: int = the number of the core whose data you want to get,
       the default value is 0
     """
-     # function to retrive information from cpuinfo file
+
     cpu_list = []
     try:
         with open("/proc/cpuinfo") as f:
@@ -138,7 +143,7 @@ def get_cpudt_pcr(keyword: str, core_num: int = 0):
                 cpu_list.append(cpu_dict)
 
     except FileNotFoundError:
-        raise "Error"
+        raise CPUInfoError("failed to get cpu data")
 
     else:
         longest_key = 0
@@ -184,4 +189,57 @@ def get_cpudt_pcr(keyword: str, core_num: int = 0):
             raise CPUInfoError(f"the data of '{keyword}' not available")
         except IndexError:
             raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_list)-1}")
-            
+
+
+
+def get_cpudt_snsr(keyword: str):
+    """
+    Snsr means SeNSoRs, get information about
+    cpu from sensors by a keyword.
+    
+    Parameters:
+    * keyword: str = keyword to get related data
+    * flags (special keyword: str):
+        - "--all" : return sorted list of data
+        - "--raw" : return data in form of raw dictionary
+        - "--len" : returns the number of data  
+    """
+
+    try:
+        data = subprocess.run(["sensors"], capture_output=True, text=True)
+    except FileNotFoundError:
+        raise CPUInfoError("failed to get cpu data")
+    else:
+        raw_sensor_data = data.stdout.splitlines()
+        sensor_dict = {}
+
+        for data in raw_sensor_data:
+            if ":" not in data:
+                continue
+            key, value = data.split(":")
+            key, value = key.strip().replace('"',''), value.strip().replace('"','')
+            sensor_dict[key] = value
+
+        if keyword == "--all":
+            longest_key = 0
+            for key in sensor_dict.keys():
+                if len(key) > longest_key:
+                    longest_key = len(key)
+
+            formated_sensor_data = []
+            for key,value in sensor_dict.items():
+                formated_sensor_data.append(f"{key}{" "*(longest_key-len(key))} : {value}")
+
+            return _VerticalList(formated_sensor_data)
+        
+        if keyword == "--raw":
+            return sensor_dict
+        
+        if keyword == "--len":
+            return len(sensor_dict)
+        
+        try:
+            return sensor_dict[keyword]
+        except KeyError:
+            raise CPUInfoError(f"the data of '{keyword}' not available")
+    
