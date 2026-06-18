@@ -150,7 +150,7 @@ def get_cpudt_stc(keyword: str, core_num: int = 0):
             raise CPUInfoError(f"the data of '{keyword}' not available")
         except IndexError:
             raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_organize_data)-1}")
-print(get_cpudt_stc("--all"))
+
 
 
 def get_cpudt_dynmc(keyword: str, core_num: int = 0):
@@ -225,22 +225,15 @@ def get_cpudt_dynmc(keyword: str, core_num: int = 0):
         # output that is affected by the core_num value
             if keyword == "--sel":
                 sorted_list = []
-                try:
-                    for key,value in cpu_list[core_num].items():
-                        sorted_list.append((f"{key}{" "*(longest_key-len(key))} : {value}"))
-                    sorted_list.append(f"[data length = {len(cpu_list[core_num])}]")
-                    
-                except IndexError:
-                    raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_list)-1}")
-                else:
-                    return _VerticalList(sorted_list)
+                for key,value in cpu_list[core_num].items():
+                    sorted_list.append((f"{key}{" "*(longest_key-len(key))} : {value}"))
+                sorted_list.append(f"[data length = {len(cpu_list[core_num])}]")
+                                    
+                return _VerticalList(sorted_list)
                 
 
             if keyword == "--len":
-                try:
-                    return len(cpu_list[core_num])
-                except IndexError:
-                    raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_list)-1}")
+                return len(cpu_list[core_num])
                     
             
             return cpu_list[core_num][keyword]
