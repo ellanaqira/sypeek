@@ -36,10 +36,10 @@ class _VerticalList:
     
 
 
-def get_cpudt_stc(keyword: str, core_num: int = 0):
+def get_cpudt_sttc(keyword: str, core_num: int = 0):
     """
     Get static information for each logical core on cpu.
-    cpudt_stc means CPU DaTa StaTiC, where all the data
+    cpudt_sttc means CPU DaTa STaTiC, where all the data
     about the CPU that is taken is static data or data
     that does not change.
 
