@@ -1,5 +1,5 @@
 import subprocess
-import os
+
 
 class CPUInfoError(Exception):
     """
@@ -8,7 +8,7 @@ class CPUInfoError(Exception):
     cpu information.
 
     Attributes:
-        message -- explanation of the error
+    * message -- explanation of the error
     """
 
     def __init__(self, message):
@@ -16,16 +16,166 @@ class CPUInfoError(Exception):
         super().__init__(self.message)
 
 
-def _return_cpu_error(keyword_error: str):
-    # raised CPUInfoError
-    raise CPUInfoError(f"Couldn't get cpu '{keyword_error}' information")
+
+class _VerticalList:
+    """
+    Return "vertical list" from the raw list.
+
+    Atributes:
+    * data_list = raw list that want to turn into "vertical list"
+    """
+    def __init__(self, data_list: list[str]):
+        self.data_list = data_list
+
+    def __str__(self):
+        string_list = []
+        for data in self.data_list:
+            string_list.append(str(data))
+
+        return "\n".join(string_list)
+    
+
+
+def get_cpudt_sttc(keyword: str, core_num: int = 0):
+    """
+    Get static information for each logical core on cpu.
+    cpudt_sttc means CPU DaTa STaTiC, where all the data
+    about the CPU that is taken is static data or data
+    that does not change.
+
+    Parameters:
+    * keyword: str  = keyword to get related data from selected core (core_num: int)
+    * flags (special keyword: str):
+        * The core_num parameter is ignored, meaning the flags below
+          will return output without regard to the number of cores.
+            - "--all"   : return sorted list of data from each logical core
+            - "--allraw"   : return all cpu core data in form of list[dict]
+
+        * Depending on the core_num parameter, it means the flags below will
+          return output based on the number from the core_number parameter.
+            - "--sel" : return selected core data by the number of the core (core_num: int)
+            - "--selraw"   : returns selected core (core_num: int) data in form of dictionary
+            - "--len"   : returns the number of data from the selected core (core_num: int)
+    * core_num: int = the number of the core whose data you want to get,
+      the default value is 0
+    """
+    try:    
+        data = subprocess.run(["cpuid"], capture_output=True, text=True)
+    except FileNotFoundError:
+        raise CPUInfoError("failed to get cpu data")
+    else:    
+        raw_cpu_data = data.stdout.splitlines()
+
+        temp_core_data = [] # temporary store data per-core
+        temp_cpu_list = [] # temporary store core data set from temp_core_data variable 
+        i: int = 1
+        for data in raw_cpu_data:
+            if data == f"CPU {i}:":
+                temp_core_data.sort()
+                temp_cpu_list.append(temp_core_data)
+                temp_core_data = []
+                i = i+1
+            temp_core_data.append(data)
+        temp_core_data.sort()
+        temp_cpu_list.append(temp_core_data)
+
+        cpu_dict = {} # store data per-core in form of dictionary
+        cpu_organize_data = [] # store organize cpu_dict data
+        for temp_core_data in temp_cpu_list:
+            for data in temp_core_data:
+                try:
+                    key, value = data.split("=", 1)
+                except ValueError:
+                    continue
+                else:
+                    key, value = key.strip(), value.strip().replace('"','')
+                    cpu_dict[key] = value
+            cpu_organize_data.append(cpu_dict)
+            cpu_dict = {}
+
+        try:
+        # output that ignores the core_num value
+            if keyword == "--all":
+            # find longest key for formated and neater output
+                longest_key :int = 0
+                for cpu in cpu_organize_data:
+                    for key in cpu.keys():
+                        if len(key) > longest_key:
+                            longest_key = len(key)
+            
+            # create formated data
+                formated_output = []
+                i :int = 0
+                for cpu in cpu_organize_data:
+                    formated_output.append(f"# CPU {i} :")
+                    for key,value in cpu.items():
+                        formated_output.append((f"{key}{" "*(longest_key-(len(key)))} : {value}"))
+                    formated_output.append(f"[data length = {len(cpu)}]")
+                    formated_output.append("\n")
+                    i = i+1
+                return _VerticalList(formated_output)
+
+            if keyword == "--allraw":
+                return cpu_organize_data
+            
+
+        # output that is affected by the core_num value
+            if keyword == "--sel":
+            # find longest key for formated and neater output
+                longest_key :int = 0
+                for cpu in cpu_organize_data:
+                    for key in cpu.keys():
+                        if len(key) > longest_key:
+                            longest_key = len(key)
+
+            # create formated data
+                formated_output = []
+                formated_output.append(f"# CPU {core_num} :")
+                for key, value in cpu_organize_data[core_num].items():
+                    formated_output.append((f"{key}{" "*(longest_key-(len(key)))} : {value}"))
+                formated_output.append(f"[data length = {len(cpu_organize_data[core_num])}]")
+                return _VerticalList(formated_output)
+    
+            if keyword == "--selraw":
+                return cpu_organize_data[core_num]        
+
+            if keyword == "--len":
+                return len(cpu_organize_data[core_num])
+
+
+        # return data by keyword and core_num
+            return cpu_organize_data[core_num][keyword]
+        
+        except KeyError:
+            raise CPUInfoError(f"the data of '{keyword}' not available")
+        except IndexError:
+            raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_organize_data)-1}")
 
 
 
-# _get_cpu_data_from_cpuinfo function ==============================================================
+def get_cpudt_dynmc(keyword: str, core_num: int = 0):
+    """
+    Get information for each logical core on cpu.
+    cpudt_dynmc means CPU DaTa DYNaMiC, which means
+    that the data about the CPU that is taken contains
+    some dynamic or changing data and is not fixed.
 
-def _get_cpu_data_from_cpuinfo(keyword: str, keyword_error: str, core_num: int = 0):
-    # function to retrive information from cpuinfo file
+    Parameters:
+    * keyword: str  = keyword to get related data from selected core (core_num: int)
+    * flags (special keyword: str):
+        * The core_num parameter is ignored, meaning the flags below
+          will return output without regard to the number of cores.
+            - "--all"   : return sorted list of data from each logical core
+            - "--raw"   : return all cpu core data in form of list[dict]
+
+        * Depending on the core_num parameter, it means the flags below will
+          return output based on the number from the core_number parameter.
+            - "--sel" : return selected core data by the number of the core (core_num: int)
+            - "--len"   : returns the number of data from the selected core (core_num: int)
+    * core_num: int = the number of the core whose data you want to get,
+      the default value is 0
+    """
+
     cpu_list = []
     try:
         with open("/proc/cpuinfo") as f:
@@ -46,270 +196,102 @@ def _get_cpu_data_from_cpuinfo(keyword: str, keyword_error: str, core_num: int =
                 cpu_list.append(cpu_dict)
 
     except FileNotFoundError:
-        _return_cpu_error(keyword_error)
+        raise CPUInfoError("failed to get cpu data")
 
     else:
-        _CORE_NUM_ERROR_MESSAGE = f"core number must be int() and between 0 and {len(cpu_list)-1}"
+        longest_key = 0
+        for processor in cpu_list:
+            for key in processor.keys():
+                len_temp = len(key)
+                if len_temp > longest_key:
+                    longest_key = len_temp
 
-        if type(core_num) != int:
-            return _CORE_NUM_ERROR_MESSAGE
-
-        elif core_num < 0 or core_num > (len(cpu_list)-1):
-            return _CORE_NUM_ERROR_MESSAGE
-
-        elif keyword == "all cores":
-            return len(cpu_list)
-        
-        else:
-            try:
-                if cpu_list[core_num].get(keyword):
-                    return cpu_list[core_num].get(keyword)
-                
-                else:
-                    _return_cpu_error(keyword_error)
-                
-            except TypeError:
-                _return_cpu_error(keyword_error)
-
-
-# functions that rely on _get_cpu_data_from_cpuinfo function
-def cpu_cores(core_type: str):
-    _CPU_CORES_ERROR_MESSAGE = "core type must be 'l' or 'p'"
-
-    try:
-        # return number of cpu physical core(s)
-        if core_type.lower() == 'p':
-            return int(_get_cpu_data_from_cpuinfo("cpu cores", "Physical Core"))
-        
-        # return number of cpu logical core(s)
-        elif core_type.lower() == 'l':
-            return int(_get_cpu_data_from_cpuinfo("all cores", "Logical Core"))
-        
-        else:
-            return _CPU_CORES_ERROR_MESSAGE
-        
-    except AttributeError:
-        return _CPU_CORES_ERROR_MESSAGE
-
-def cpu_vendor():
-    vendor_id_dict = {
-        # general vendor id
-        "AuthenticAMD": "AMD",
-        "CentaurHauls": "IDT",
-        "CyrixInstead": "Cyrix",
-        "GenuineIntel": "Intel",
-        "GenuineIotel": "Intel",
-        "TransmetaCPU": "Transmeta",
-        "GenuineTMx86": "Transmeta",
-        "Geode by NSC": "National Semiconductor",
-        "NexGenDriven": "NexGen",
-        "RiseRiseRise": "Rise",
-        "SiS SiS SiS ": "SiS",
-        "UMC UMC UMC ": "UMC",
-        "Vortex86 SoC": "DM&P",
-        "  Shanghai  ": "Zhaoxin",
-        "HygonGenuine": "Hygon",
-        "Genuine  RDC": "RDC Semiconductor",
-        "E2K MACHINE ": "MCST",
-        "VIA VIA VIA ": "VIA",
-        "AMD ISBETTER": "AMD",
-
-        # open source CPU cores
-        "GenuineAo486": "ao486",
-        "MiSTer AO486": "ao486",
-
-        # virtual machines / emulator
-        "ConnectixCPU": "Connectix",
-        "Virtual CPU ": "Microsoft",
-        "Insignia 586": "Insignia",
-        "Compaq FX!32": "Compaq",
-        "PowerVM Lx86": "IBM",
-        "Neko Project": "Neko Project",
-    }
-
-    get_vendor_id = _get_cpu_data_from_cpuinfo("vendor_id", "Vendor")
-    vendor = vendor_id_dict.get(get_vendor_id)
-    
-    # handling vendor id not found
-    if vendor == None:
-        return f"vendor name of '{get_vendor_id}' could not be found"
-    else:
-        return vendor  
-
-def cpu_vendorid():
-    return _get_cpu_data_from_cpuinfo("vendor_id", "Vendor ID")
-
-def cpu_model_name():
-    # return cpu model name
-    return _get_cpu_data_from_cpuinfo("model name", "Model Name")
-
-def cpu_stepping():
-    # return cpu stepping value
-    return int(_get_cpu_data_from_cpuinfo("stepping", "Stepping"))
-
-def cpu_speed(core_num: int):
-    # return cpu speed
-    return float(_get_cpu_data_from_cpuinfo("cpu MHz", "Speed", core_num))
-
-
-
-# _get_cpu_data_from_command function ==============================================================
-
-def _get_cpu_data_from_command(command:str, keyword:str, keyword_error: str):
-    try:
-        data = subprocess.run(command, capture_output=True, text=True)
-
-    except FileNotFoundError:
-        _return_cpu_error(keyword_error)
-    
-    else:
-        data = data.stdout.splitlines()
-        for line in data:
-            if keyword in line:
-                try:
-                    return line.split(':')[1].strip()
-                except IndexError:
-                    return line.split('=')[1].strip()
-                
-        _return_cpu_error(keyword_error)
-
-
-# functions that rely on _get_cpu_data_from_command function
-def cpu_threads():
-    # return number of thread(s) per core
-    return int(_get_cpu_data_from_command("lscpu", "Thread", "Thread"))   
-
-def cpu_family():
-    # return cpu family
-    return _get_cpu_data_from_command("cpuid", "family", "Family")
-
-def cpu_family_synth():
-    # return cpu family synth
-    return _get_cpu_data_from_command("cpuid", "family synth", "Family Synth")
-
-def cpu_model():
-    # return cpu model
-    return _get_cpu_data_from_command("cpuid", "model", "Model")
-    
-def cpu_model_synth():
-    # return cpu model synth
-    return _get_cpu_data_from_command("cpuid", "model synth", "Model Synth")
-
-def cpu_temp(scale: str):
-    celcius = float(_get_cpu_data_from_command("sensors", "Tctl", "Temperature").replace('+','').replace("°C",''))
-    
-    _CPU_TEMPERATURE_ERROR_MESSAGE = "temperature scale must be 'c', 'f', or 'k'"
-
-    try:
-        if scale.lower() == 'c':
-            return celcius # Celcius
-        elif scale.lower() == 'f':
-            return (celcius * 9/5) + 32 # Fahrenheit
-        elif scale.lower() == 'k':
-            return celcius + 273.15 # Kelvin
-        else:
-            return _CPU_TEMPERATURE_ERROR_MESSAGE
-    
-    except AttributeError:
-        return _CPU_TEMPERATURE_ERROR_MESSAGE
-    
-
-
-# _get_cpu_cache_level function ====================================================================
-
-def _get_cpu_cache_info(num_of_index_folder: int, keyword: str, keyword_error: str):
-    try:
-        path_folder: str = f"/sys/devices/system/cpu/cpu0/cache/index{num_of_index_folder}"
-        level_cache_dict = {}
-
-        with os.scandir(path_folder) as folder:
-            for file in folder:
-                if file.is_file and file.name.endswith(""):
-                    with open(file.path, encoding='utf-8') as f:
-                        key = (f.name.split('/')[-1])
-                        value = (f.read().strip())
-
-                        level_cache_dict[key] = value
-
-    except FileNotFoundError:
-        _return_cpu_error(keyword_error)
-    else:
         try:
-            return level_cache_dict[keyword]
+        # output that ignores the core_num value
+            if keyword == "--all":
+                sorted_list = []
+                for processor in cpu_list:
+                    for key,value in processor.items():
+                        sorted_list.append((f"{key}{" "*(longest_key-len(key))} : {value}"))
+                    sorted_list.append(len(processor))
+                    sorted_list.append("\n")
+                
+                return _VerticalList(sorted_list)
+            
+            if keyword == "--raw":
+                return cpu_list
+            
+
+        # output that is affected by the core_num value
+            if keyword == "--sel":
+                sorted_list = []
+                for key,value in cpu_list[core_num].items():
+                    sorted_list.append((f"{key}{" "*(longest_key-len(key))} : {value}"))
+                sorted_list.append(f"[data length = {len(cpu_list[core_num])}]")
+                                    
+                return _VerticalList(sorted_list)
+                
+
+            if keyword == "--len":
+                return len(cpu_list[core_num])
+                    
+            
+            return cpu_list[core_num][keyword]
         except KeyError:
-            _return_cpu_error(keyword_error)
+            raise CPUInfoError(f"the data of '{keyword}' not available")
+        except IndexError:
+            raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_list)-1}")
+
+
+
+def get_cpudt_snsr(keyword: str):
+    """
+    Snsr means SeNSoRs, get information about
+    cpu from sensors by a keyword.
     
-
-# functions that rely on _get_cpu_cache_info function
-def cpu_l1c(cache_type: str):
-    _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
-
-    try:
-        if cache_type.lower() == 'd': # Level 1 data cache in byte
-            d_cache_size = int((_get_cpu_cache_info(0, "size", "L1 Cache Data")).replace("K", ""))
-            return d_cache_size * 1024
-        
-        elif cache_type.lower() == 'i': # Level 1 instruction cache in byte
-            i_cache_size = int((_get_cpu_cache_info(1, "size", "L1 Cache Inst")).replace("K", ""))
-            return i_cache_size * 1024
-
-        else:
-            return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
-        
-    except AttributeError:
-        return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
-
-
-def cpu_l2c():
-    # return cpu Level 2 cache in byte
-    cache_size = int((_get_cpu_cache_info(2, "size", "L2 Cache")).replace("K", ""))
-    return cache_size * 1024
-        
-
-def cpu_l3c():
-    # return cpu Level 3 cache in byte
-    cache_size = int((_get_cpu_cache_info(3, "size", "L3 Cache")).replace("K", ""))
-    return cache_size * 1024
-
-
-# cache level way
-def cpu_l1c_way(cache_type: str):
-    _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
+    Parameters:
+    * keyword: str = keyword to get related data
+    * flags (special keyword: str):
+        - "--all" : return sorted list of data
+        - "--raw" : return data in form of raw dictionary
+        - "--len" : returns the number of data  
+    """
 
     try:
-        if cache_type.lower() == 'd':    
-            return int(_get_cpu_cache_info(0, "ways_of_associativity", "L1 Data Way"))
-        elif cache_type.lower() == 'i':
-            return int(_get_cpu_cache_info(1, "ways_of_associativity", "L1 Inst Way"))
-        else:
-            return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
-    except AttributeError:
-        return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
+        data = subprocess.run(["sensors"], capture_output=True, text=True)
+    except FileNotFoundError:
+        raise CPUInfoError("failed to get cpu data")
+    else:
+        raw_sensor_data = data.stdout.splitlines()
+        sensor_dict = {}
 
-def cpu_l2c_way():
-    return int(_get_cpu_cache_info(2, "ways_of_associativity", "L2 Way"))
+        for data in raw_sensor_data:
+            if ":" not in data:
+                continue
+            key, value = data.split(":")
+            key, value = key.strip().replace('"',''), value.strip().replace('"','')
+            sensor_dict[key] = value
 
-def cpu_l3c_way():
-    return int(_get_cpu_cache_info(3, "ways_of_associativity", "L3 Way"))
+        if keyword == "--all":
+            longest_key = 0
+            for key in sensor_dict.keys():
+                if len(key) > longest_key:
+                    longest_key = len(key)
 
+            formated_sensor_data = []
+            for key,value in sensor_dict.items():
+                formated_sensor_data.append(f"{key}{" "*(longest_key-len(key))} : {value}")
 
-# cache level line size
-def cpu_l1c_line(cache_type: str):
-    _CPU_LEVEL1_CACHE_ERROR_MESSAGE = "cache type must be 'd' or 'i'"
-
-    try:
-        if cache_type.lower() == 'd':    
-            return int(_get_cpu_cache_info(0, "coherency_line_size", "L1 Data Line_Size"))
-        elif cache_type.lower() == 'i':
-            return int(_get_cpu_cache_info(1, "coherency_line_size", "L1 Inst Line_Size"))
-        else:
-            return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
-    except AttributeError:
-        return _CPU_LEVEL1_CACHE_ERROR_MESSAGE
+            return _VerticalList(formated_sensor_data)
+        
+        if keyword == "--raw":
+            return sensor_dict
+        
+        if keyword == "--len":
+            return len(sensor_dict)
+        
+        try:
+            return sensor_dict[keyword]
+        except KeyError:
+            raise CPUInfoError(f"the data of '{keyword}' not available")
     
-def cpu_l2c_line():
-    return int(_get_cpu_cache_info(2, "coherency_line_size", "L2 Line_Size"))
-
-def cpu_l3c_line():
-    return int(_get_cpu_cache_info(3, "coherency_line_size", "L3_Line_Size"))
-
