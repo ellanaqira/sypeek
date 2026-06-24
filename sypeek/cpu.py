@@ -24,15 +24,24 @@ class _VerticalList:
     Atributes:
     * data_list = raw list that want to turn into "vertical list"
     """
-    def __init__(self, data_list: list[str]):
+    def __init__(self, data_list):
         self.data_list = data_list
 
-    def __str__(self):
-        string_list = []
-        for data in self.data_list:
-            string_list.append(str(data))
 
-        return "\n".join(string_list)
+    def __str__(self):
+        longest_key: int = 0
+        for data in self.data_list:
+            for key in data.keys():
+                if len(key) > longest_key:
+                    longest_key = len(key)
+
+        organize = []
+        for data in self.data_list:
+            for key,value in data.items():
+                organize.append(f"{key}{" "*(longest_key-len(key))} : {value}")
+            organize.append("\n")
+
+        return "\n".join(organize)
     
 
 
@@ -50,12 +59,14 @@ def get_cpudt_sttc(keyword: str, core_num: int = 0):
           will return output without regard to the number of cores.
             - "--all"   : return sorted list of data from each logical core
             - "--allraw"   : return all cpu core data in form of list[dict]
+            - "--allen"   : returns the length of entire data
 
+            
         * Depending on the core_num parameter, it means the flags below will
           return output based on the number from the core_number parameter.
-            - "--sel" : return selected core data by the number of the core (core_num: int)
-            - "--selraw"   : returns selected core (core_num: int) data in form of dictionary
-            - "--len"   : returns the number of data from the selected core (core_num: int)
+            - "--sel"     : return selected core data by the number of the core (core_num: int)
+            - "--selraw"  : return selected core (core_num: int) data in form of dictionary
+            - "--sellen"  : return the length of selected core data (core_num: int)
     * core_num: int = the number of the core whose data you want to get,
       the default value is 0
     """
@@ -96,50 +107,22 @@ def get_cpudt_sttc(keyword: str, core_num: int = 0):
         try:
         # output that ignores the core_num value
             if keyword == "--all":
-            # find longest key for formated and neater output
-                longest_key :int = 0
-                for cpu in cpu_organize_data:
-                    for key in cpu.keys():
-                        if len(key) > longest_key:
-                            longest_key = len(key)
-            
-            # create formated data
-                formated_output = []
-                i :int = 0
-                for cpu in cpu_organize_data:
-                    formated_output.append(f"# CPU {i} :")
-                    for key,value in cpu.items():
-                        formated_output.append((f"{key}{" "*(longest_key-(len(key)))} : {value}"))
-                    formated_output.append(f"[data length = {len(cpu)}]")
-                    formated_output.append("\n")
-                    i = i+1
-                return _VerticalList(formated_output)
+                return _VerticalList(cpu_organize_data)
 
             if keyword == "--allraw":
                 return cpu_organize_data
             
+            if keyword == "--allen":
+                return int(len(cpu_organize_data) * len(cpu_organize_data[core_num]))
 
         # output that is affected by the core_num value
             if keyword == "--sel":
-            # find longest key for formated and neater output
-                longest_key :int = 0
-                for cpu in cpu_organize_data:
-                    for key in cpu.keys():
-                        if len(key) > longest_key:
-                            longest_key = len(key)
-
-            # create formated data
-                formated_output = []
-                formated_output.append(f"# CPU {core_num} :")
-                for key, value in cpu_organize_data[core_num].items():
-                    formated_output.append((f"{key}{" "*(longest_key-(len(key)))} : {value}"))
-                formated_output.append(f"[data length = {len(cpu_organize_data[core_num])}]")
-                return _VerticalList(formated_output)
+                return _VerticalList([cpu_organize_data[core_num]])
     
             if keyword == "--selraw":
                 return cpu_organize_data[core_num]        
 
-            if keyword == "--len":
+            if keyword == "--sellen":
                 return len(cpu_organize_data[core_num])
 
 
@@ -165,13 +148,16 @@ def get_cpudt_dynmc(keyword: str, core_num: int = 0):
     * flags (special keyword: str):
         * The core_num parameter is ignored, meaning the flags below
           will return output without regard to the number of cores.
-            - "--all"   : return sorted list of data from each logical core
-            - "--raw"   : return all cpu core data in form of list[dict]
+            - "--all"    : return sorted list of data from each logical core
+            - "--allraw" : return all cpu core data in form of list[dict]
+            - "--allen"  : returns the length of entire data
 
+            
         * Depending on the core_num parameter, it means the flags below will
           return output based on the number from the core_number parameter.
-            - "--sel" : return selected core data by the number of the core (core_num: int)
-            - "--len"   : returns the number of data from the selected core (core_num: int)
+            - "--sel"    : return selected core data by the number of the core (core_num: int)
+            - "--selraw" : return selected core (core_num: int) data in form of dictionary
+            - "--sellen" : return the length of selected core data (core_num: int)
     * core_num: int = the number of the core whose data you want to get,
       the default value is 0
     """
@@ -199,41 +185,26 @@ def get_cpudt_dynmc(keyword: str, core_num: int = 0):
         raise CPUInfoError("failed to get cpu data")
 
     else:
-        longest_key = 0
-        for processor in cpu_list:
-            for key in processor.keys():
-                len_temp = len(key)
-                if len_temp > longest_key:
-                    longest_key = len_temp
-
         try:
         # output that ignores the core_num value
             if keyword == "--all":
-                sorted_list = []
-                for processor in cpu_list:
-                    for key,value in processor.items():
-                        sorted_list.append((f"{key}{" "*(longest_key-len(key))} : {value}"))
-                    sorted_list.append(len(processor))
-                    sorted_list.append("\n")
-                
-                return _VerticalList(sorted_list)
+                return _VerticalList(cpu_list)
             
-            if keyword == "--raw":
+            if keyword == "--allraw":
                 return cpu_list
             
+            if keyword == "--allen":
+                return int(len(cpu_list) * len(cpu_list[core_num]))
 
         # output that is affected by the core_num value
-            if keyword == "--sel":
-                sorted_list = []
-                for key,value in cpu_list[core_num].items():
-                    sorted_list.append((f"{key}{" "*(longest_key-len(key))} : {value}"))
-                sorted_list.append(f"[data length = {len(cpu_list[core_num])}]")
-                                    
-                return _VerticalList(sorted_list)
-                
+            if keyword == "--sel":  
+                return _VerticalList([cpu_list[core_num]])
+            
+            if keyword == "--selraw":
+                return cpu_list[core_num]
 
-            if keyword == "--len":
-                return len(cpu_list[core_num])
+            if keyword == "--sellen":
+                return int((len(cpu_list[core_num])))
                     
             
             return cpu_list[core_num][keyword]
@@ -273,25 +244,17 @@ def get_cpudt_snsr(keyword: str):
             sensor_dict[key] = value
 
         if keyword == "--all":
-            longest_key = 0
-            for key in sensor_dict.keys():
-                if len(key) > longest_key:
-                    longest_key = len(key)
-
-            formated_sensor_data = []
-            for key,value in sensor_dict.items():
-                formated_sensor_data.append(f"{key}{" "*(longest_key-len(key))} : {value}")
-
-            return _VerticalList(formated_sensor_data)
+            formated = [sensor_dict]
+            return _VerticalList(formated)
         
         if keyword == "--raw":
             return sensor_dict
         
         if keyword == "--len":
-            return len(sensor_dict)
+            return int(len(sensor_dict))
         
         try:
             return sensor_dict[keyword]
         except KeyError:
             raise CPUInfoError(f"the data of '{keyword}' not available")
-    
+        
