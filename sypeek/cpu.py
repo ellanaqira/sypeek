@@ -1,4 +1,5 @@
 import subprocess
+from _helper.verlist import _VerticalList as _VerList
 
 
 class CPUInfoError(Exception):
@@ -14,34 +15,6 @@ class CPUInfoError(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
-
-
-
-class _VerticalList:
-    """
-    Return "vertical list" from the raw list.
-
-    Atributes:
-    * data_list = raw list that want to turn into "vertical list"
-    """
-    def __init__(self, data_list):
-        self.data_list = data_list
-
-
-    def __str__(self):
-        longest_key: int = 0
-        for data in self.data_list:
-            for key in data.keys():
-                if len(key) > longest_key:
-                    longest_key = len(key)
-
-        organize = []
-        for data in self.data_list:
-            for key,value in data.items():
-                organize.append(f"{key}{" "*(longest_key-len(key))} : {value}")
-            organize.append("\n")
-
-        return "\n".join(organize)
     
 
 
@@ -107,7 +80,7 @@ def get_cpudt_sttc(keyword: str, core_num: int = 0):
         try:
         # output that ignores the core_num value
             if keyword == "--all":
-                return _VerticalList(cpu_organize_data)
+                return _VerList(cpu_organize_data)
 
             if keyword == "--allraw":
                 return cpu_organize_data
@@ -117,7 +90,7 @@ def get_cpudt_sttc(keyword: str, core_num: int = 0):
 
         # output that is affected by the core_num value
             if keyword == "--sel":
-                return _VerticalList([cpu_organize_data[core_num]])
+                return _VerList([cpu_organize_data[core_num]])
     
             if keyword == "--selraw":
                 return cpu_organize_data[core_num]        
@@ -188,7 +161,7 @@ def get_cpudt_dynmc(keyword: str, core_num: int = 0):
         try:
         # output that ignores the core_num value
             if keyword == "--all":
-                return _VerticalList(cpu_list)
+                return _VerList(cpu_list)
             
             if keyword == "--allraw":
                 return cpu_list
@@ -198,7 +171,7 @@ def get_cpudt_dynmc(keyword: str, core_num: int = 0):
 
         # output that is affected by the core_num value
             if keyword == "--sel":  
-                return _VerticalList([cpu_list[core_num]])
+                return _VerList([cpu_list[core_num]])
             
             if keyword == "--selraw":
                 return cpu_list[core_num]
@@ -245,7 +218,7 @@ def get_cpudt_snsr(keyword: str):
 
         if keyword == "--all":
             formated = [sensor_dict]
-            return _VerticalList(formated)
+            return _VerList(formated)
         
         if keyword == "--raw":
             return sensor_dict
