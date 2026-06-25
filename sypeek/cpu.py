@@ -106,6 +106,8 @@ def get_cpudt_sttc(keyword: str, core_num: int = 0):
             raise CPUInfoError(f"the data of '{keyword}' not available")
         except IndexError:
             raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_organize_data)-1}")
+        except TypeError:
+            raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_organize_data)-1}")
 
 
 
@@ -184,6 +186,8 @@ def get_cpudt_dynmc(keyword: str, core_num: int = 0):
         except KeyError:
             raise CPUInfoError(f"the data of '{keyword}' not available")
         except IndexError:
+            raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_list)-1}")
+        except TypeError:
             raise CPUInfoError(f"core number must be int() and between 0 and {len(cpu_list)-1}")
 
 
