@@ -1,3 +1,5 @@
+from _helper.verlist import _VerticalList as _VerList
+
 class MemoInfoError(Exception):
     """
     Exception raised and displays an error message
@@ -12,31 +14,6 @@ class MemoInfoError(Exception):
         self.message = message
         super().__init__(self.message)
 
-
-
-class _VerticalList:
-    """
-    Return "vertical list" from the raw list.
-
-    Atributes:
-    * data_list = raw list that want to turn into "vertical list"
-    """
-    def __init__(self, data_dict: dict[str]):
-        self.data_dict = data_dict
-
-
-    def __str__(self):
-        longest_key: int = 0
-        for key in self.data_dict.keys():
-            if len(key) > longest_key:
-                longest_key = len(key)
-
-        organize = []
-        for key,value in self.data_dict.items():
-            organize.append(f"{key}{" "*(longest_key-len(key))} : {value}")
-
-        return "\n".join(organize)
-    
 
 
 def get_memdt(keyword: str):
@@ -68,7 +45,8 @@ def get_memdt(keyword: str):
                 return data_dict
             
             if keyword == "--all":
-                return _VerticalList(data_dict)
+                organize: list = [dict(sorted(data_dict.items()))]
+                return _VerList(organize)
             
             if keyword == "--len":
                 return int(len(data_dict))
