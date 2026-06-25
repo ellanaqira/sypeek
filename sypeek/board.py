@@ -1,4 +1,6 @@
 import os
+from _helper.verlist import _VerticalList as _VerList
+
 
 class BoardInfoError(Exception):
     """
@@ -15,38 +17,11 @@ class BoardInfoError(Exception):
         super().__init__(self.message)
 
 
-class _VerticalList:
-    """
-    Return "vertical list" from the raw list.
-
-    Atributes:
-    * data_list = raw list that want to turn into "vertical list"
-    """
-    def __init__(self, data_list):
-        self.data_list = data_list
-
-
-    def __str__(self):
-        longest_key: int = 0
-        for data in self.data_list:
-            for key in data.keys():
-                if len(key) > longest_key:
-                    longest_key = len(key)
-
-        organize = []
-        for data in self.data_list:
-            for key,value in data.items():
-                organize.append(f"{key}{" "*(longest_key-len(key))} : {value}")
-            organize.append("\n")
-
-        return "\n".join(organize)
-
-
 
 def get_brddt(keyword: str):
     """
     brddt means BoaRD DaTa, this funtion is used to
-    get information about board by a keyword.
+    get information about board and BIOS by a keyword.
     
     Parameters:
     * keyword: str = keyword to get related data
@@ -67,7 +42,7 @@ def get_brddt(keyword: str):
                     None 
         try:
             if keyword == "--all":
-                return _VerticalList([board_data])
+                return _VerList([board_data])
             
             if keyword == "--raw":
                 return board_data
