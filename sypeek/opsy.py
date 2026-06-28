@@ -1,4 +1,4 @@
-from _helper.verlist import _VerticalList as _VerList
+from _verlist import _VerticalList as _VerList
 
 
 class OpSyInfoError(Exception):
